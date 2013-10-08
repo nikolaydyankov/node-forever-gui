@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.png">
+
+    <title>Starter Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/main.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="../../assets/js/html5shiv.js"></script>
+    <script src="../../assets/js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div class="container">
+    <div class="page-header">
+        <h1>node-forever-gui</h1>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <button type="button" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Script</button>
+            <button type="button" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-refresh"></span></button>
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-play"></span> Start All</button>
+                <button type="button" class="btn btn-danger btn-lg"><span class="glyphicon glyphicon-pause"></span> Stop All</button>
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>
+                    Script Name
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>
+                    Path
+                </th>
+                <th>
+                    Log
+                </th>
+                <th>
+                    Edit
+                </th>
+                <th>
+                    Delete
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    My Script
+                </td>
+                <td>
+                    <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-play"></span></button>
+                </td>
+                <td>
+                    /Users/me/public/somewebsite.com/public/js/server.js
+                </td>
+                <td>
+                    <a href="#">/home/me/.forever/NVZf.log <span class="glyphicon glyphicon-link"></span></a>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span></button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Ninja Script
+                </td>
+                <td>
+                    <button type="button" class="btn btn-warning"><span class="glyphicon glyphicon-pause"></span></button>
+                </td>
+                <td>
+                    /Users/me/public/somewebsite.com/public/nodejs/js/ninja/myotherserver.js
+                </td>
+                <td>
+                    <a href="#">/home/me/.forever/uoL0.log <span class="glyphicon glyphicon-link"></span></a>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span></button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    My Other Script
+                </td>
+                <td>
+                    <button type="button" class="btn btn-warning"><span class="glyphicon glyphicon-pause"></span></button>
+                </td>
+                <td>
+                    /Users/me/public/somewebsite.com/public/js/server.js
+                </td>
+                <td>
+                    <a href="#">/home/me/.forever/0IBf.log <span class="glyphicon glyphicon-link"></span></a>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span></button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="footer">
+        <div class="container">
+            GitHub: <a href="https://github.com/nikolaydyankov/node-forever-gui" target="_blank">node-forever-gui</a><br />
+            Authors: Nikolay Dyankov, Ivan Dokov
+        </div>
+    </div>
+</div>
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="assets/js/jquery.js"></script>
+<script src="bootstrap/js/bootstrap.min.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>
