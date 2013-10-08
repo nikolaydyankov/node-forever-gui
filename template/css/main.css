@@ -37,3 +37,43 @@
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
+
+/* Log link eye glyph */
+td .glyphicon-eye-open {
+    opacity: 0;
+}
+td:hover .glyphicon-eye-open {
+    opacity: 1;
+}
+
+td {
+    line-height: 30px !important;
+}
+
+/*
+    Editable field
+*/
+.nfg-editable-field-save-button {
+    margin-left: 8px;
+}
+
+/* Editable field - table hover state */
+.nfg-editable-field-edit-button {
+    opacity: 0;
+    cursor: pointer;
+    margin-left: 8px;
+}
+td:hover .nfg-editable-field-edit-button {
+    opacity: 1;
+}
+
+/* Editable field - edit state */
+.nfg-editable-field-input, .nfg-editable-field-save-button {
+    display: none;
+}
+.nfg-editable-field-edit-state .nfg-editable-field-input, .nfg-editable-field-edit-state .nfg-editable-field-save-button {
+    display: block;
+}
+.nfg-editable-field-edit-state .nfg-editable-field-content, .nfg-editable-field-edit-state .nfg-editable-field-edit-button {
+    display: none;
+}

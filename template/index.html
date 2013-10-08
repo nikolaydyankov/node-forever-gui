@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="../../assets/ico/favicon.png">
+    <link rel="shortcut icon" href="assets/ico/favicon.png">
 
-    <title>Starter Template for Bootstrap</title>
+    <title>node-forever-gui</title>
 
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -17,8 +17,8 @@
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
-    <script src="../../assets/js/html5shiv.js"></script>
-    <script src="../../assets/js/respond.min.js"></script>
+    <script src="assets/js/html5shiv.js"></script>
+    <script src="assets/js/respond.min.js"></script>
     <![endif]-->
 </head>
 
@@ -29,11 +29,11 @@
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">
-            <button type="button" class="btn btn-success btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Script</button>
-            <button type="button" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-refresh"></span></button>
+            <button type="button" class="btn btn-success btn-sm" id="nfg-button-add-script"><span class="glyphicon glyphicon-plus"></span> Add Script</button>
+            <button type="button" class="btn btn-default btn-sm" id="nfg-button-refresh"><span class="glyphicon glyphicon-refresh"></span></button>
             <div class="btn-group pull-right">
-                <button type="button" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-play"></span> Start All</button>
-                <button type="button" class="btn btn-danger btn-lg"><span class="glyphicon glyphicon-pause"></span> Stop All</button>
+                <button type="button" class="btn btn-default btn-sm" id="nfg-button-start-all"><span class="glyphicon glyphicon-play"></span> Start All</button>
+                <button type="button" class="btn btn-danger btn-sm" id="nfg-button-stop-all"><span class="glyphicon glyphicon-pause"></span> Stop All</button>
             </div>
         </div>
         <table class="table">
@@ -52,72 +52,48 @@
                     Log
                 </th>
                 <th>
-                    Edit
-                </th>
-                <th>
                     Delete
                 </th>
             </tr>
             </thead>
             <tbody>
-            <tr>
+            <tr id="script-312356">
                 <td>
-                    My Script
+                    <div class="nfg-editable-field">
+                        <div class="nfg-editable-field-input pull-left">
+                            <input type="text" class="nfg-editable-field-input-element form-control input-sm" placeholder="placeholder">
+                        </div>
+                        <div class="nfg-editable-field-content pull-left">My Script</div>
+                        <div class="nfg-editable-field-edit-button pull-left">
+                            <div class="btn btn-default btn-xs nfg-button-script-name-edit"><span class="glyphicon glyphicon-edit"></span></div>
+                        </div>
+                        <div class="nfg-editable-field-save-button pull-left">
+                            <div class="btn btn-info nfg-button-script-name-save btn-sm"><span class="glyphicon glyphicon-ok"></span></div>
+                        </div>
+                    </div>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-play"></span></button>
+                    <button type="button" class="btn btn-sm btn-success" id="nfg-button-start-stop"><span class="glyphicon glyphicon-play"></span></button>
                 </td>
                 <td>
-                    /Users/me/public/somewebsite.com/public/js/server.js
+                    <div class="nfg-editable-field">
+                        <div class="nfg-editable-field-input pull-left">
+                            <input type="text" class="nfg-editable-field-input-element form-control input-sm" placeholder="placeholder">
+                        </div>
+                        <div class="nfg-editable-field-content pull-left">/Users/me/public/somewebsite.com/public/js/server.js</div>
+                        <div class="nfg-editable-field-edit-button pull-left">
+                            <div class="btn btn-default btn-xs nfg-button-script-name-edit"><span class="glyphicon glyphicon-edit"></span></div>
+                        </div>
+                        <div class="nfg-editable-field-save-button pull-left">
+                            <div class="btn btn-info btn-sm nfg-button-script-name-save"><span class="glyphicon glyphicon-ok"></span></div>
+                        </div>
+                    </div>
                 </td>
                 <td>
-                    <a href="#">/home/me/.forever/NVZf.log <span class="glyphicon glyphicon-link"></span></a>
+                    <a href="#" class="nfg-button-link">/home/me/.forever/NVZf.log <span class="glyphicon glyphicon-eye-open"></span></a>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span></button>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Ninja Script
-                </td>
-                <td>
-                    <button type="button" class="btn btn-warning"><span class="glyphicon glyphicon-pause"></span></button>
-                </td>
-                <td>
-                    /Users/me/public/somewebsite.com/public/nodejs/js/ninja/myotherserver.js
-                </td>
-                <td>
-                    <a href="#">/home/me/.forever/uoL0.log <span class="glyphicon glyphicon-link"></span></a>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span></button>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    My Other Script
-                </td>
-                <td>
-                    <button type="button" class="btn btn-warning"><span class="glyphicon glyphicon-pause"></span></button>
-                </td>
-                <td>
-                    /Users/me/public/somewebsite.com/public/js/server.js
-                </td>
-                <td>
-                    <a href="#">/home/me/.forever/0IBf.log <span class="glyphicon glyphicon-link"></span></a>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span></button>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
+                    <button type="button" class="btn btn-sm btn-danger nfg-button-trash"><span class="glyphicon glyphicon-trash"></span></button>
                 </td>
             </tr>
             </tbody>
