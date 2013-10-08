@@ -1,0 +1,14 @@
+/
+/command
+    - "forever" commands
+    - POST vars:
+        - "cmd_name"
+        - "arg"
+
+        command end format:
+        "forever <cmd_name> <arg>"
+
+/log
+    - view script logs
+    - POST vars:
+        - "path"
