@@ -4,6 +4,40 @@ var SCRIPT_STATUS_PAUSED = 'paused';
 
 // Classes
 var scripts = {};
+var communicator = new APICommunicator();
+
+function APICommunicator () {
+    this.serverURL = document.URL;
+}
+
+APICommunicator.prototype.fetchAllScripts = function(callback) {
+    console.log('Fetching scripts from server');
+
+    // TEST DATA
+    var script1 = new Script();
+    script1.id = 'script-54534';
+    script1.name = 'My script 1';
+    script1.status = SCRIPT_STATUS_PLAYING;
+    script1.path = 'path/to/my/script.js';
+
+    var script2 = new Script();
+    script2.id = 'script-3421423';
+    script2.name = 'My script 2';
+    script2.status = SCRIPT_STATUS_PAUSED;
+    script2.path = 'path/to/my/other/script.js';
+
+    var script1ID = script1.id;
+    var script2ID = script2.id;
+
+    var fetchedScripts = {
+        script1ID : script1,
+        script2ID : script2
+    }
+
+    // (END) TEST DATA
+
+    callback(fetchedScripts);
+}
 
 function Script () {
     this.id = '';
@@ -12,14 +46,14 @@ function Script () {
     this.path = '';
 }
 
-//noinspection UnterminatedStatementJS
 Script.prototype.saveScript = function() {
+    console.log('Saving scripts to server');
     // Save...
 };
 
 (function($, undefined) {
     $(document).ready(function() {
-        console.log('asda');
+        init();
 
         // Events
         $('.nfg-button-script-name-edit').on('click', function(e) {
@@ -29,6 +63,62 @@ Script.prototype.saveScript = function() {
             toggleEditableFieldState($(e.target));
         });
     });
+
+    function init() {
+        communicator.fetchAllScripts(function(fetchedScripts) {
+            scripts = fetchedScripts;
+            displayScripts();
+        });
+    }
+    function displayScripts() {
+        for (var key in scripts) {
+            var script = scripts[key];
+
+            // Prepare the template object with the real data
+            insertInScriptTemplateDataFromScript(scripts[key]);
+
+            // Generate actual HTML content to be inserted in the table
+            var htmlContent = htmlContentForScript(scripts[key]);
+
+            // Insert the finished HTML code in the table
+            $('#nfg-script-container').find('tbody').append(htmlContent);
+        }
+    }
+    function insertInScriptTemplateDataFromScript(script) {
+        var templateContainer = $('#nfg-script-template');
+
+        templateContainer.find('#nfg-script-template-col1').find('.nfg-editable-field-content').html(script.name);
+        templateContainer.find('#nfg-script-template-col3').find('.nfg-editable-field-content').html(script.path);
+
+        if (script.status == SCRIPT_STATUS_PLAYING) {
+            templateContainer.find('#nfg-script-template-col2').find('button').removeClass('btn-default');
+            templateContainer.find('#nfg-script-template-col2').find('.glyphicon').removeClass('glyphicon-pause');
+
+            templateContainer.find('#nfg-script-template-col2').find('button').addClass('btn-success');
+            templateContainer.find('#nfg-script-template-col2').find('.glyphicon').addClass('glyphicon-play');
+        } else {
+            templateContainer.find('#nfg-script-template-col2').find('button').removeClass('btn-success');
+            templateContainer.find('#nfg-script-template-col2').find('.glyphicon').removeClass('glyphicon-play');
+
+            templateContainer.find('#nfg-script-template-col2').find('button').addClass('btn-default');
+            templateContainer.find('#nfg-script-template-col2').find('.glyphicon').addClass('glyphicon-pause');
+        }
+    }
+    function htmlContentForScript(script) {
+        var content = '';
+
+        content += '<tr id="' + script.id + '">';
+
+        content += '<td>' + $('#nfg-script-template-col1').html() + '</td>';
+        content += '<td>' + $('#nfg-script-template-col2').html() + '</td>';
+        content += '<td>' + $('#nfg-script-template-col3').html() + '</td>';
+        content += '<td>' + $('#nfg-script-template-col4').html() + '</td>';
+        content += '<td>' + $('#nfg-script-template-col5').html() + '</td>';
+
+        content += '</tr>';
+
+        return content;
+    }
 
     // Event handlers
     function toggleEditableFieldState(buttonEl) {

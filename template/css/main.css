@@ -77,3 +77,9 @@ td:hover .nfg-editable-field-edit-button {
 .nfg-editable-field-edit-state .nfg-editable-field-content, .nfg-editable-field-edit-state .nfg-editable-field-edit-button {
     display: none;
 }
+
+/* Misc */
+
+#nfg-script-template {
+    display: none;
+}
