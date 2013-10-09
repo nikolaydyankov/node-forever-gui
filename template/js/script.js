@@ -15,10 +15,12 @@ function Script () {
 //noinspection UnterminatedStatementJS
 Script.prototype.saveScript = function() {
     // Save...
-}
+};
 
 (function($, undefined) {
     $(document).ready(function() {
+        console.log('asda');
+
         // Events
         $('.nfg-button-script-name-edit').on('click', function(e) {
             toggleEditableFieldState($(e.target));
@@ -56,7 +58,7 @@ Script.prototype.saveScript = function() {
             container.find('.nfg-editable-field-content').html(newContent);
 
             // Save script
-            scripts[scriptID].save();
+            scripts[scriptID].saveScript();
         }
     }
 })(jQuery);
