@@ -16,7 +16,7 @@ APICommunicator.prototype.fetchAllScripts = function(callback) {
         "cmd" : "list",
         "args" : ""
     }, function(data) {
-        console.log(data);
+        console.log(JSON.parse(data));
     });
 
     // TEST DATA

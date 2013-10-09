@@ -7,6 +7,7 @@ var http = require('http');
 //var credentials = {key: privateKey, cert: certificate};
 var express = require('express');
 var app = express();
+var exec = require('child_process').exec;
 
 app.configure(function(){
     app.use(express.static(__dirname + '/html'));
@@ -22,10 +23,25 @@ httpServer.listen(80);
 //httpsServer.listen(443);
 
 app.post('/command', function(req, res) {
-    res.end(req.body.cmd);
+    execute('forever ' + req.body.cmd + ' ' + req.body.args + ' --plain', function(result) {
+        var names = result.match(/\S+\.js/g);
+        var paths = result.match(/\/\S+\.log/g);
+
+
+        var response = JSON.stringify({
+            "paths" : paths,
+            "names" : names
+        });
+
+        console.log(JSON.stringify(result));
+
+        res.end(response);
+    });
 });
 
-
+function execute(command, callback){
+    exec(command, function(error, stdout, stderr){ callback(stdout); });
+};
 
 // Unix commands exec: http://stackoverflow.com/a/12941138/1156999
 // Basic authentication: http://stackoverflow.com/a/12148212/1156999
