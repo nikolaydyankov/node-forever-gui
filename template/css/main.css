@@ -78,6 +78,16 @@ td:hover .nfg-editable-field-edit-button {
     display: none;
 }
 
+/* Remove script modal */
+
+.nfg-remove-script-modal-state-running .nfg-remove-script-modal-state-not-running-element {
+     display: none;
+ }
+
+.nfg-remove-script-modal-state-not-running .nfg-remove-script-modal-state-running-element {
+    display: none;
+}
+
 /* Misc */
 
 #nfg-script-template {

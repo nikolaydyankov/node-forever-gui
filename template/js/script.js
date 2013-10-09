@@ -2,14 +2,15 @@
 var SCRIPT_STATUS_PLAYING = 'playing';
 var SCRIPT_STATUS_PAUSED = 'paused';
 
-// Classes
+// Vars
 var scripts = {};
 var communicator = new APICommunicator();
+var shouldRespondToEvents = true;
 
+// Classes
 function APICommunicator () {
     this.serverURL = document.URL;
 }
-
 APICommunicator.prototype.fetchAllScripts = function(callback) {
     // TEST DATA
     var script1 = new Script();
@@ -35,9 +36,12 @@ APICommunicator.prototype.fetchAllScripts = function(callback) {
 };
 APICommunicator.prototype.doesScriptExistWithPath = function(scriptPath, callback) {
     // fetch all scripts and check if a script with this path is already running
-
     callback(false);
 };
+APICommunicator.prototype.removeScript = function(script, callback) {
+    // remove the script from db, script.id
+    callback();
+}
 APICommunicator.prototype.startAllScripts = function(callback) {
     // Start all scripts that exist in the database
     callback();
@@ -53,20 +57,16 @@ function Script () {
     this.status = '';
     this.path = '';
 }
-
 Script.prototype.saveScript = function(callback) {
     // Save...
-
     callback();
 };
 Script.prototype.startScript = function(callback) {
     // Start...
-
     callback();
 };
 Script.prototype.stopScript = function(callback) {
     // Stop...
-
     callback();
 };
 
@@ -76,27 +76,41 @@ Script.prototype.stopScript = function(callback) {
 
         // Main buttons
         $('#nfg-button-add-script').on('click', function() {
-            addScriptButtonClicked();
+            if (shouldRespondToEvents) {
+                addScriptButtonClicked();
+            }
         });
         $('#nfg-button-refresh').on('click', function() {
-            refreshButtonClicked();
+            if (shouldRespondToEvents) {
+                refreshButtonClicked();
+            }
         });
         $('#nfg-button-start-all').on('click', function() {
-            startAllButtonClicked();
-        });
-        $('#nfg-button-stop-all').on('click', function() {
-            stopAllButtonClicked();
+            if (shouldRespondToEvents) {
+                startAllButtonClicked();
+            }
         });
 
         // Modal buttons
         $('#nfg-add-script-modal-add-script-button').on('click', function() {
-            addScriptModalButtonClicked();
+            if (shouldRespondToEvents) {
+                addScriptModalButtonClicked();
+            }
         });
-        $('#nfg-delete-script-modal-delete-script-button').on('click', function() {
-            deleteScriptModalButtonClicked();
+        $('#nfg-remove-script-modal-remove-script-button').on('click', function() {
+            if (shouldRespondToEvents) {
+                removeScriptModalButtonClicked();
+            }
         });
-        $('#nfg-delete-script-modal-delete-and-stop-script-button').on('click', function() {
-            deleteAndStopModalButtonClicked();
+        $('#nfg-remove-script-modal-stop-and-remove-script-button').on('click', function() {
+            if (shouldRespondToEvents) {
+                removeAndStopModalButtonClicked();
+            }
+        });
+        $('#nfg-stop-all-scripts-modal-button').on('click', function() {
+            if (shouldRespondToEvents) {
+                stopAllButtonClicked();
+            }
         });
     });
 
@@ -119,11 +133,13 @@ Script.prototype.stopScript = function(callback) {
     }
     // Table will fade and loading text/animation will appear. For now it will only become empty.
     function indicateScriptTableLoading() {
+        shouldRespondToEvents = false;
         $('#nfg-script-container').css('opacity', 0.5);
     }
     // Table will fade and loading text/animation will appear. For now it will only become empty.
     function indicateScriptTableNotLoading() {
         setTimeout(function() {
+            shouldRespondToEvents = true;
             $('#nfg-script-container').css('opacity', 1.0);
         }, 1000);
     }
@@ -185,20 +201,33 @@ Script.prototype.stopScript = function(callback) {
     // Adds events for the dynamically added buttons
     function addEventsForDynamicallyGeneratedContent() {
         // Start/Stop buttons
-        $('.nfg-button-start-stop').one('click', function(e) {
-            startStopButtonClicked($(e.target));
+        $('.nfg-button-start-stop').off('click').on('click', function(e) {
+            if (shouldRespondToEvents) {
+                startStopButtonClicked($(e.target));
+            }
         });
 
         // Edit buttons
-        $('.nfg-button-script-name-edit').one('click', function(e) {
-            toggleEditableFieldState($(e.target));
+        $('.nfg-button-script-name-edit').off('click').on('click', function(e) {
+            if (shouldRespondToEvents) {
+                toggleEditableFieldState($(e.target));
+            }
         });
-        $('.nfg-button-script-name-save').one('click', function(e) {
-            toggleEditableFieldState($(e.target));
+        $('.nfg-button-script-name-save').off('click').on('click', function(e) {
+            if (shouldRespondToEvents) {
+                toggleEditableFieldState($(e.target));
+            }
+        });
+
+        // Trash Button
+        $('.nfg-button-trash').off('click').on('click', function(e) {
+            if (shouldRespondToEvents) {
+                trashButtonClicked($(e.target));
+            }
         });
     }
 
-// Event handlers
+    // Event handlers
 
     // Start/Stop functionality for individual scripts
     function startStopButtonClicked(button) {
@@ -220,7 +249,6 @@ Script.prototype.stopScript = function(callback) {
             });
         }
     }
-
     // Editing functionality for script name & script path
     function toggleEditableFieldState(buttonEl) {
         var scriptID = buttonEl.closest('tr').attr('id');
@@ -266,7 +294,22 @@ Script.prototype.stopScript = function(callback) {
             });
         }
     }
+    // Trash Button
+    function trashButtonClicked(buttonEl) {
+        var scriptID = buttonEl.closest('tr').attr('id');
+        var modalBox = $('#nfg-remove-script-modal');
 
+        // save the ID of the script that is being edited
+        modalBox.data('script-id', scriptID);
+
+        if (scripts[scriptID].status == SCRIPT_STATUS_PLAYING) {
+            modalBox.removeClass('nfg-remove-script-modal-state-not-running');
+            modalBox.addClass('nfg-remove-script-modal-state-running');
+        } else {
+            modalBox.removeClass('nfg-remove-script-modal-state-running');
+            modalBox.addClass('nfg-remove-script-modal-state-not-running');
+        }
+    }
     // Main Buttons
     function addScriptButtonClicked() {
 
@@ -296,7 +339,6 @@ Script.prototype.stopScript = function(callback) {
             });
         });
     }
-
     // Modal buttons
     function addScriptModalButtonClicked() {
         var scriptName = $('nfg-add-script-modal-input-name').val();
@@ -327,10 +369,30 @@ Script.prototype.stopScript = function(callback) {
             }
         });
     }
-    function deleteScriptModalButtonClicked() {
-        console.log('delete script');
+    function removeScriptModalButtonClicked() {
+        var modalBox = $('#nfg-remove-script-modal');
+        var scriptID = modalBox.data('script-id');
+
+        indicateScriptTableLoading();
+
+        communicator.removeScript(scripts[scriptID], function() {
+            refreshScripts(function() {
+                indicateScriptTableNotLoading();
+            });
+        });
     }
-    function deleteAndStopModalButtonClicked() {
-        console.log('delete and stop script');
+    function removeAndStopModalButtonClicked() {
+        var modalBox = $('#nfg-remove-script-modal');
+        var scriptID = modalBox.data('script-id');
+
+        indicateScriptTableLoading();
+
+        scripts[scriptID].stopScript(function() {
+            communicator.removeScript(scripts[scriptID], function() {
+                refreshScripts(function() {
+                    indicateScriptTableNotLoading();
+                });
+            });
+        });
     }
 })(jQuery);
