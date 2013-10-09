@@ -1,6 +1,6 @@
 niki:
 ----------
-
+- remove script dialog -> remove or stop + remove
 
 ivan:
 ----------
