@@ -11,8 +11,6 @@ function APICommunicator () {
 }
 
 APICommunicator.prototype.fetchAllScripts = function(callback) {
-    console.log('Fetching scripts from server');
-
     // TEST DATA
     var script1 = new Script();
     script1.id = 'script-54534';
@@ -47,7 +45,6 @@ function Script () {
 }
 
 Script.prototype.saveScript = function() {
-    console.log('Saving scripts to server');
     // Save...
 };
 
@@ -64,12 +61,15 @@ Script.prototype.saveScript = function() {
         });
     });
 
+    // Launched on page load, tells APICommunicator to load scripts and calls functions to display the fetched scripts
     function init() {
         communicator.fetchAllScripts(function(fetchedScripts) {
             scripts = fetchedScripts;
             displayScripts();
         });
     }
+
+    // Iterate over each script in the "scripts" global var and insert generated HTML in the table
     function displayScripts() {
         for (var key in scripts) {
             var script = scripts[key];
@@ -84,6 +84,8 @@ Script.prototype.saveScript = function() {
             $('#nfg-script-container').find('tbody').append(htmlContent);
         }
     }
+
+    // Modify the template object with the data from the script (prepare for insertion in the table)
     function insertInScriptTemplateDataFromScript(script) {
         var templateContainer = $('#nfg-script-template');
 
@@ -104,6 +106,8 @@ Script.prototype.saveScript = function() {
             templateContainer.find('#nfg-script-template-col2').find('.glyphicon').addClass('glyphicon-pause');
         }
     }
+
+    // Takes the template object and generates a ready-to-insert HTML code
     function htmlContentForScript(script) {
         var content = '';
 
@@ -121,6 +125,8 @@ Script.prototype.saveScript = function() {
     }
 
     // Event handlers
+
+    // Editing functionality for script name & script path
     function toggleEditableFieldState(buttonEl) {
         var scriptID = buttonEl.closest('tr').attr('id');
         var container = buttonEl.closest('.nfg-editable-field');
