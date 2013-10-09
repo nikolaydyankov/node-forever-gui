@@ -2,11 +2,11 @@
 /command
     - "forever" commands
     - POST vars:
-        - "cmd_name"
-        - "arg"
+        - "cmd"
+        - "args"
 
         command end format:
-        "forever <cmd_name> <arg>"
+        "forever <cmd_name> <args>"
 
 /log
     - view script logs
