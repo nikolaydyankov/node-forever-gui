@@ -24,18 +24,28 @@ APICommunicator.prototype.fetchAllScripts = function(callback) {
     script2.status = SCRIPT_STATUS_PAUSED;
     script2.path = 'path/to/my/other/script.js';
 
-    var script1ID = script1.id;
-    var script2ID = script2.id;
+    var fetchedScripts = {};
 
-    var fetchedScripts = {
-        script1ID : script1,
-        script2ID : script2
-    }
+    fetchedScripts[script1.id] = script1;
+    fetchedScripts[script2.id] = script2;
 
     // (END) TEST DATA
 
     callback(fetchedScripts);
-}
+};
+APICommunicator.prototype.doesScriptExistWithPath = function(scriptPath, callback) {
+    // fetch all scripts and check if a script with this path is already running
+
+    callback(false);
+};
+APICommunicator.prototype.startAllScripts = function(callback) {
+    // Start all scripts that exist in the database
+    callback();
+};
+APICommunicator.prototype.stopAllScripts = function(callback) {
+    // Stop all scripts that exist in the database
+    callback();
+};
 
 function Script () {
     this.id = '';
@@ -44,33 +54,84 @@ function Script () {
     this.path = '';
 }
 
-Script.prototype.saveScript = function() {
+Script.prototype.saveScript = function(callback) {
     // Save...
+
+    callback();
+};
+Script.prototype.startScript = function(callback) {
+    // Start...
+
+    callback();
+};
+Script.prototype.stopScript = function(callback) {
+    // Stop...
+
+    callback();
 };
 
 (function($, undefined) {
     $(document).ready(function() {
         init();
 
-        // Events
-        $('.nfg-button-script-name-edit').on('click', function(e) {
-            toggleEditableFieldState($(e.target));
+        // Main buttons
+        $('#nfg-button-add-script').on('click', function() {
+            addScriptButtonClicked();
         });
-        $('.nfg-button-script-name-save').on('click', function(e) {
-            toggleEditableFieldState($(e.target));
+        $('#nfg-button-refresh').on('click', function() {
+            refreshButtonClicked();
+        });
+        $('#nfg-button-start-all').on('click', function() {
+            startAllButtonClicked();
+        });
+        $('#nfg-button-stop-all').on('click', function() {
+            stopAllButtonClicked();
+        });
+
+        // Modal buttons
+        $('#nfg-add-script-modal-add-script-button').on('click', function() {
+            addScriptModalButtonClicked();
+        });
+        $('#nfg-delete-script-modal-delete-script-button').on('click', function() {
+            deleteScriptModalButtonClicked();
+        });
+        $('#nfg-delete-script-modal-delete-and-stop-script-button').on('click', function() {
+            deleteAndStopModalButtonClicked();
         });
     });
 
-    // Launched on page load, tells APICommunicator to load scripts and calls functions to display the fetched scripts
+    // Launched on page load
     function init() {
+        indicateScriptTableLoading();
+
+        refreshScripts(function() {
+            indicateScriptTableNotLoading();
+        });
+    }
+    // Tells APICommunicator to load scripts and calls functions to display the fetched scripts
+    function refreshScripts(callback) {
         communicator.fetchAllScripts(function(fetchedScripts) {
             scripts = fetchedScripts;
             displayScripts();
+            addEventsForDynamicallyGeneratedContent();
+            callback();
         });
     }
-
+    // Table will fade and loading text/animation will appear. For now it will only become empty.
+    function indicateScriptTableLoading() {
+        $('#nfg-script-container').css('opacity', 0.5);
+    }
+    // Table will fade and loading text/animation will appear. For now it will only become empty.
+    function indicateScriptTableNotLoading() {
+        setTimeout(function() {
+            $('#nfg-script-container').css('opacity', 1.0);
+        }, 1000);
+    }
     // Iterate over each script in the "scripts" global var and insert generated HTML in the table
     function displayScripts() {
+        var scriptContainer = $('#nfg-script-container');
+        scriptContainer.find('tbody').html('');
+
         for (var key in scripts) {
             var script = scripts[key];
 
@@ -81,10 +142,9 @@ Script.prototype.saveScript = function() {
             var htmlContent = htmlContentForScript(scripts[key]);
 
             // Insert the finished HTML code in the table
-            $('#nfg-script-container').find('tbody').append(htmlContent);
+            scriptContainer.find('tbody').append(htmlContent);
         }
     }
-
     // Modify the template object with the data from the script (prepare for insertion in the table)
     function insertInScriptTemplateDataFromScript(script) {
         var templateContainer = $('#nfg-script-template');
@@ -106,7 +166,6 @@ Script.prototype.saveScript = function() {
             templateContainer.find('#nfg-script-template-col2').find('.glyphicon').addClass('glyphicon-pause');
         }
     }
-
     // Takes the template object and generates a ready-to-insert HTML code
     function htmlContentForScript(script) {
         var content = '';
@@ -123,8 +182,44 @@ Script.prototype.saveScript = function() {
 
         return content;
     }
+    // Adds events for the dynamically added buttons
+    function addEventsForDynamicallyGeneratedContent() {
+        // Start/Stop buttons
+        $('.nfg-button-start-stop').one('click', function(e) {
+            startStopButtonClicked($(e.target));
+        });
 
-    // Event handlers
+        // Edit buttons
+        $('.nfg-button-script-name-edit').one('click', function(e) {
+            toggleEditableFieldState($(e.target));
+        });
+        $('.nfg-button-script-name-save').one('click', function(e) {
+            toggleEditableFieldState($(e.target));
+        });
+    }
+
+// Event handlers
+
+    // Start/Stop functionality for individual scripts
+    function startStopButtonClicked(button) {
+        var scriptID = button.closest('tr').attr('id');
+
+        indicateScriptTableLoading();
+
+        if (scripts[scriptID].status == SCRIPT_STATUS_PLAYING) {
+            scripts[scriptID].stopScript(function() {
+                refreshScripts(function() {
+                    indicateScriptTableNotLoading();
+                });
+            });
+        } else {
+            scripts[scriptID].startScript(function() {
+                refreshScripts(function() {
+                    indicateScriptTableNotLoading();
+                });
+            });
+        }
+    }
 
     // Editing functionality for script name & script path
     function toggleEditableFieldState(buttonEl) {
@@ -153,8 +248,89 @@ Script.prototype.saveScript = function() {
             var newContent = container.find('.nfg-editable-field-input-element').val();
             container.find('.nfg-editable-field-content').html(newContent);
 
+            // Find out what which property is being edited
+            if (container.hasClass('nfg-editable-field-path')) {
+                scripts[scriptID].path = newContent;
+            }
+            if (container.hasClass('nfg-editable-field-name')) {
+                scripts[scriptID].name = newContent;
+            }
+
             // Save script
-            scripts[scriptID].saveScript();
+            indicateScriptTableLoading();
+
+            scripts[scriptID].saveScript(function() {
+                refreshScripts(function() {
+                    indicateScriptTableNotLoading();
+                });
+            });
         }
+    }
+
+    // Main Buttons
+    function addScriptButtonClicked() {
+
+    }
+    function refreshButtonClicked() {
+        indicateScriptTableLoading();
+
+        refreshScripts(function() {
+            indicateScriptTableNotLoading();
+        });
+    }
+    function startAllButtonClicked() {
+        indicateScriptTableLoading();
+
+        communicator.startAllScripts(function() {
+            refreshScripts(function() {
+                indicateScriptTableNotLoading();
+            });
+        });
+    }
+    function stopAllButtonClicked() {
+        indicateScriptTableLoading();
+
+        communicator.stopAllScripts(function() {
+            refreshScripts(function() {
+                indicateScriptTableNotLoading();
+            });
+        });
+    }
+
+    // Modal buttons
+    function addScriptModalButtonClicked() {
+        var scriptName = $('nfg-add-script-modal-input-name').val();
+        var scriptPath = $('nfg-add-script-modal-input-path').val();
+
+        communicator.doesScriptExistWithPath(scriptPath, function(scriptExists) {
+            if (scriptExists) {
+                alert('This script is already running! The scripts list will refresh.');
+
+                indicateScriptTableLoading();
+
+                refreshScripts(function() {
+                    indicateScriptTableNotLoading()
+                });
+            } else {
+                var newScript = new Script();
+                newScript.name = scriptName;
+                newScript.path = scriptPath;
+                newScript.status = SCRIPT_STATUS_PAUSED;
+
+                indicateScriptTableLoading();
+
+                newScript.saveScript(function() {
+                    refreshScripts(function() {
+                        indicateScriptTableNotLoading();
+                    });
+                });
+            }
+        });
+    }
+    function deleteScriptModalButtonClicked() {
+        console.log('delete script');
+    }
+    function deleteAndStopModalButtonClicked() {
+        console.log('delete and stop script');
     }
 })(jQuery);
