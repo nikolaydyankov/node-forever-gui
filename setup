@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# Check for administrator user
+# if [ `id -u` != 0 ]; then
+# 	echo "Run with administrator user (sudo)"
+# 	exit 1;
+# fi
+
+APPNAME="Forever GUI"
+S="   "
+SCRIPT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+declare -a SETTINGS
+
+case "$1" in
+	install)
+	
+			echo "$S Installaton of $APPNAME has started"
+
+			# Prompt for Domain
+			while true; do
+				read -p "$S Specify domain for $APPNAME (without http [myappname.com]): " DOMAIN
+				
+				if [ ! -z "$DOMAIN" ]; then
+					echo "$S Domain is set to $DOMAIN"
+					break;
+				fi
+			done
+
+			# Prompt for Port
+			while true; do
+				read -p "$S Specify port for $DOMAIN [443]: " PORT
+				
+				portRegex='^[0-9]{2,5}$'
+				if [[ $PORT =~ $portRegex ]]; then
+					echo "$S Port is set to $PORT"
+					break;
+				else
+					PORT=443
+					echo "$S Port is set to $PORT because specified port is not matching the pattern [0-9]{2,5}"
+					break;
+				fi
+			done
+
+			echo ""
+			echo "$S ============================================================"
+			echo ""
+
+			echo "$S The $APPNAME will be available at url https://$DOMAIN:$PORT"
+			echo ""
+
+		;;
+	reconfigure)
+
+			echo "$S Reconfiguration of $APPNAME has started"
+	
+		;;
+	login)
+
+			echo "$S Add new login credentials or update existing ones"
+
+		;;
+	*)
+
+		echo "Usage: {install|reconfigure|login}"
+
+	;;
+esac
+
+for i in "${!SETTINGS[@]}"
+do
+  echo "[$i] => ${SETTINGS[$i]}"
+done
