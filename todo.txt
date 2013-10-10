@@ -9,6 +9,7 @@ ivan:
 installer tasks:
 ----------------
 - copy all the gui source to /usr/local/lib/node_modules/forever-gui
+- make control script and place it in /usr/local/bin/forever-gui as symlink to /usr/local/lib/node_modules/forever-gui/bin/forever-gui
 - prompts for web interface url and port (default to 443)
 - prompts user for login name and password (save the password in a safe place?)
 - generate self-signed certificates
