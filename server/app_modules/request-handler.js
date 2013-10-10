@@ -36,7 +36,36 @@ exports.handleRequest = handleRequest;
 // PRIVATE
 
 function fetchAll(res) {
+    dbManager.getScripts(function(scripts) {
+        var storedScripts = scripts;
 
+        execManager.executeListCommand(function(result) {
+            var runningScripts = result;
+
+            // Merge into "result" and remove duplicated
+            for (var i=0; i<runningScripts.length; i++) {
+                var scriptExists = false;
+
+                for (var j=0; j<storedScripts.length; j++) {
+                    if (runningScripts[i].id == storedScripts[j].id) {
+                        scriptExists = true;
+                    }
+                }
+
+                if (!scriptExists) {
+                    storedScripts.push(runningScripts[i]);
+                }
+            }
+
+            var result = storedScripts;
+
+            // Save all scripts
+            dbManager.saveScripts(result, function() {
+                var json = JSON.stringify(result);
+                res.end(json);
+            });
+        });
+    });
 }
 function startAll(res) {
 

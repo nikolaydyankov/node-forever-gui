@@ -116,3 +116,7 @@ td:hover .nfg-editable-field-edit-button {
     -webkit-box-sizing: border-box;
     padding: 20px;
 }
+
+#nfg-script-container input {
+    min-width: 100px;
+}

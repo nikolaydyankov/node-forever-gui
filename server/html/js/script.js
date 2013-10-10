@@ -16,32 +16,28 @@ function APICommunicator () {
     this.serverURL = document.URL;
 }
 APICommunicator.prototype.fetchAllScripts = function(callback) {
-    $.post(this.serverURL + 'fetch_all', {
-        "cmd" : "list",
-        "args" : ""
-    }, function(data) {
-        l(data);
+    $.ajax({
+        type : "POST",
+        url : this.serverURL + 'fetch_all',
+        success : function(data) {
+            var scriptsArray = JSON.parse(data);
+            var scriptsObjs = {};
 
-        var dataObj = JSON.parse(data);
-        var names = dataObj.names;
-        var logPaths = dataObj.logPaths;
-        var scriptsCount = names.length;
-        var result = new Array();
+            for (var i=0; i<scriptsArray.length; i++) {
+                var id = scriptsArray[i].id;
+                var script = new Script();
+                script.id = id;
+                script.name = scriptsArray[i].name;
+                script.status = (scriptsArray[i].status == 1) ? SCRIPT_STATUS_PLAYING : SCRIPT_STATUS_PAUSED;
+                script.filename = scriptsArray[i].filename;
+                script.path = scriptsArray[i].path;
+                script.logPath = scriptsArray[i].logPath;
 
-        for (var i=0; i<scriptsCount; i++) {
-            var script = new Script();
-//            script.id = obj.id;
-            script.name = names[i];
-//            script.status = obj.status;
-//            script.path = obj.path;
-            script.logPath = logPaths[i];
+                scriptsObjs[id] = script;
+            }
 
-            result.push(script);
+            callback(scriptsObjs);
         }
-
-        console.log(result);
-
-        callback(result);
     });
 
 //    // TEST DATA
@@ -203,7 +199,6 @@ Script.prototype.finishFetchingLog = function() {
 
         for (var key in scripts) {
             var script = scripts[key];
-
             // Prepare the template object with the real data
             insertInScriptTemplateDataFromScript(scripts[key]);
 

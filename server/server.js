@@ -1,6 +1,5 @@
 var http =              require('http');
 var express =           require('express');
-var exec =              require('child_process').exec;
 var requestHandler =    require(__dirname + '/app_modules/request-handler.js');
 var app =               express();
 
@@ -9,7 +8,7 @@ app.configure(function(){
     app.use(express.bodyParser());
 });
 
-var httpServer = http.createServer();
+var httpServer = http.createServer(app);
 httpServer.listen(80);
 
 app.post('/fetch_all', function(req, res) {
