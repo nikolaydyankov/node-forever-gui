@@ -111,7 +111,7 @@
             </div>
         </div>
         <div id="nfg-script-template-col4">
-            <a href="#" class="nfg-button-link">/home/me/.forever/NVZf.log <span class="glyphicon glyphicon-eye-open"></span></a>
+            <a data-toggle="modal" href="#nfg-log-modal" class="nfg-button-link" id="nfg-display-log-button">/home/me/.forever/NVZf.log <span class="glyphicon glyphicon-eye-open"></span></a>
         </div>
         <div id="nfg-script-template-col5">
             <a data-toggle="modal" href="#nfg-remove-script-modal"><button type="button" class="btn btn-sm btn-danger nfg-button-trash"><span class="glyphicon glyphicon-trash"></span></button></a>
@@ -180,6 +180,28 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal" id="nfg-stop-all-scripts-modal-button">Stop All</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log Modal -->
+    <div class="modal fade" id="nfg-log-modal" tabindex="-1" role="dialog" aria-labelledby="logModalLabel" aria-hidden="true">
+        <div class="modal-dialog" id="nfg-log-modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Log</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="nfg-log-container">
+                        <div id="nfg-log-body">
+                            Log
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="nfg-log-modal-close-button" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

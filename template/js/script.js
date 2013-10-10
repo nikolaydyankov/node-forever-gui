@@ -12,6 +12,13 @@ function APICommunicator () {
     this.serverURL = document.URL;
 }
 APICommunicator.prototype.fetchAllScripts = function(callback) {
+    $.post(this.serverURL + 'command', {
+        "cmd" : "list",
+        "args" : ""
+    }, function(data) {
+        console.log(JSON.parse(data));
+    });
+
     // TEST DATA
     var script1 = new Script();
     script1.id = 'script-54534';

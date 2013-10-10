@@ -76,6 +76,16 @@ Script.prototype.stopScript = function(callback) {
     // Stop...
     callback();
 };
+Script.prototype.startFetchingLog = function(callback, updatedLogCallback) {
+    callback('Current log');
+
+    setTimeout(function() {
+        updatedLogCallback('\nLog update');
+    }, 1000);
+}
+Script.prototype.finishFetchingLog = function() {
+
+}
 
 (function($, undefined) {
     $(document).ready(function() {
@@ -117,6 +127,11 @@ Script.prototype.stopScript = function(callback) {
         $('#nfg-stop-all-scripts-modal-button').on('click', function() {
             if (shouldRespondToEvents) {
                 stopAllButtonClicked();
+            }
+        });
+        $('#nfg-log-modal-close-button').on('click', function() {
+            if (shouldRespondToEvents) {
+                closeLogButtonClicked();
             }
         });
     });
@@ -232,6 +247,13 @@ Script.prototype.stopScript = function(callback) {
                 trashButtonClicked($(e.target));
             }
         });
+
+        // Log button
+        $('#nfg-display-log-button').off('click').on('click', function(e) {
+            if (shouldRespondToEvents) {
+                logButtonClicked($(e.target));
+            }
+        });
     }
 
     // Event handlers
@@ -317,6 +339,18 @@ Script.prototype.stopScript = function(callback) {
             modalBox.addClass('nfg-remove-script-modal-state-not-running');
         }
     }
+    // Log Button
+    function logButtonClicked(buttonEl) {
+        var scriptID = buttonEl.closest('tr').attr('id');
+        var logBody = $('#nfg-log-body');
+        var modal = $('#nfg-log-modal').data('script-id', scriptID);
+
+        scripts[scriptID].startFetchingLog(function(log) {
+            logBody.html(log);
+        }, function(logUpdate) {
+            logBody.append(logUpdate);
+        });
+    }
     // Main Buttons
     function addScriptButtonClicked() {
 
@@ -337,15 +371,7 @@ Script.prototype.stopScript = function(callback) {
             });
         });
     }
-    function stopAllButtonClicked() {
-        indicateScriptTableLoading();
 
-        communicator.stopAllScripts(function() {
-            refreshScripts(function() {
-                indicateScriptTableNotLoading();
-            });
-        });
-    }
     // Modal buttons
     function addScriptModalButtonClicked() {
         var scriptName = $('nfg-add-script-modal-input-name').val();
@@ -401,5 +427,18 @@ Script.prototype.stopScript = function(callback) {
                 });
             });
         });
+    }
+    function stopAllButtonClicked() {
+        indicateScriptTableLoading();
+
+        communicator.stopAllScripts(function() {
+            refreshScripts(function() {
+                indicateScriptTableNotLoading();
+            });
+        });
+    }
+    function closeLogButtonClicked() {
+        var scriptID = $('#nfg-log-modal').data('script-id');
+        scripts[scriptID].finishFetchingLog();
     }
 })(jQuery);
