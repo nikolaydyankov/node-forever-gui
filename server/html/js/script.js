@@ -82,10 +82,10 @@ Script.prototype.startFetchingLog = function(callback, updatedLogCallback) {
     setTimeout(function() {
         updatedLogCallback('\nLog update');
     }, 1000);
-}
+};
 Script.prototype.finishFetchingLog = function() {
 
-}
+};
 
 (function($, undefined) {
     $(document).ready(function() {
