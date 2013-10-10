@@ -1,24 +1,24 @@
 server requests:
-- fetch all (run "forever list", parse all, save to db, fetch all from db)
-- start all (fetch all scripts from db, start all scripts which are NOT currently running)
-- stop all (exec "stopall")
+- fetch_all (run "forever list", parse all, save to db, fetch all from db)
+- start_all (fetch all scripts from db, start all scripts which are NOT currently running)
+- stop_all (exec "stopall")
 
-- add script (return "fail" if script already exists)
+- add_script (return "fail" if script already exists)
     { "script" : theScriptJSON }
 
-- update script
+- update_script
     { "script" : theScriptJSON }
 
-- stop script
+- stop_script
     { "script" : theScriptJSON }
 
-- start script
+- start_script
     { "script" : theScriptJSON }
 
-- remove script (from db)
+- remove_script (from db)
     { "script" : theScriptJSON }
 
-- fetch log
+- fetch_log
     { "script" : theScriptJSON }
 
 Script object properties:

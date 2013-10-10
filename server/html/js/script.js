@@ -1,3 +1,7 @@
+function l(msg) {
+    console.log(msg);
+}
+
 // Constants
 var SCRIPT_STATUS_PLAYING = 'playing';
 var SCRIPT_STATUS_PAUSED = 'paused';
@@ -12,39 +16,65 @@ function APICommunicator () {
     this.serverURL = document.URL;
 }
 APICommunicator.prototype.fetchAllScripts = function(callback) {
-    $.post(this.serverURL + 'command', {
+    $.post(this.serverURL + 'fetch_all', {
         "cmd" : "list",
         "args" : ""
     }, function(data) {
-        console.log(JSON.parse(data));
+        l(data);
+
+        var dataObj = JSON.parse(data);
+        var names = dataObj.names;
+        var logPaths = dataObj.logPaths;
+        var scriptsCount = names.length;
+        var result = new Array();
+
+        for (var i=0; i<scriptsCount; i++) {
+            var script = new Script();
+//            script.id = obj.id;
+            script.name = names[i];
+//            script.status = obj.status;
+//            script.path = obj.path;
+            script.logPath = logPaths[i];
+
+            result.push(script);
+        }
+
+        console.log(result);
+
+        callback(result);
     });
 
-    // TEST DATA
-    var script1 = new Script();
-    script1.id = 'script-54534';
-    script1.name = 'My script 1';
-    script1.status = SCRIPT_STATUS_PLAYING;
-    script1.path = 'path/to/my/script.js';
-
-    var script2 = new Script();
-    script2.id = 'script-3421423';
-    script2.name = 'My script 2';
-    script2.status = SCRIPT_STATUS_PAUSED;
-    script2.path = 'path/to/my/other/script.js';
-
-    var fetchedScripts = {};
-
-    fetchedScripts[script1.id] = script1;
-    fetchedScripts[script2.id] = script2;
+//    // TEST DATA
+//    var script1 = new Script();
+//    script1.id = 'script-54534';
+//    script1.name = 'My script 1';
+//    script1.status = SCRIPT_STATUS_PLAYING;
+//    script1.path = 'path/to/my/script.js';
+//
+//    var script2 = new Script();
+//    script2.id = 'script-3421423';
+//    script2.name = 'My script 2';
+//    script2.status = SCRIPT_STATUS_PAUSED;
+//    script2.path = 'path/to/my/other/script.js';
+//
+//    var fetchedScripts = {};
+//
+//    fetchedScripts[script1.id] = script1;
+//    fetchedScripts[script2.id] = script2;
 
     // (END) TEST DATA
 
-    callback(fetchedScripts);
+//    callback(fetchedScripts);
 };
 APICommunicator.prototype.doesScriptExistWithPath = function(scriptPath, callback) {
     // fetch all scripts and check if a script with this path is already running
     callback(false);
 };
+APICommunicator.prototype.addScript = function(script, callback) {
+    var success = true;
+
+    callback(success);
+}
 APICommunicator.prototype.removeScript = function(script, callback) {
     // remove the script from db, script.id
     callback();
@@ -63,6 +93,7 @@ function Script () {
     this.name = '';
     this.status = '';
     this.path = '';
+    this.logPath = '';
 }
 Script.prototype.saveScript = function(callback) {
     // Save...
@@ -377,29 +408,21 @@ Script.prototype.finishFetchingLog = function() {
         var scriptName = $('nfg-add-script-modal-input-name').val();
         var scriptPath = $('nfg-add-script-modal-input-path').val();
 
-        communicator.doesScriptExistWithPath(scriptPath, function(scriptExists) {
-            if (scriptExists) {
-                alert('This script is already running! The scripts list will refresh.');
+        var newScript = new Script();
+        newScript.name = scriptName;
+        newScript.path = scriptPath;
+        newScript.status = SCRIPT_STATUS_PAUSED;
 
-                indicateScriptTableLoading();
-
-                refreshScripts(function() {
-                    indicateScriptTableNotLoading()
-                });
-            } else {
-                var newScript = new Script();
-                newScript.name = scriptName;
-                newScript.path = scriptPath;
-                newScript.status = SCRIPT_STATUS_PAUSED;
-
-                indicateScriptTableLoading();
-
-                newScript.saveScript(function() {
-                    refreshScripts(function() {
-                        indicateScriptTableNotLoading();
-                    });
-                });
+        communicator.addScript(newScript, function(success) {
+            if (!success) {
+                alert('This script already exists! The scripts list will now refresh.');
             }
+
+            indicateScriptTableLoading();
+
+            refreshScripts(function() {
+                indicateScriptTableNotLoading();
+            });
         });
     }
     function removeScriptModalButtonClicked() {
