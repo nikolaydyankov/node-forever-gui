@@ -7,7 +7,7 @@ var SCRIPT_STATUS_PLAYING = 1;
 var SCRIPT_STATUS_PAUSED = 0;
 
 // Vars
-var scripts = {};
+var scripts = [];
 var service = new Service();
 var shouldRespondToEvents = true;
 
@@ -21,9 +21,10 @@ Service.prototype.fetchAllScripts = function(callback) {
         url : this.serverURL + 'fetch_all',
         success : function(data) {
             var scriptsArray = JSON.parse(data);
-            var scriptsObjs = {};
+            var scriptsObjs = [];
+            var len = scriptsArray.length;
 
-            for (var i=0; i<scriptsArray.length; i++) {
+            for (var i = 0; i < len; i++) {
                 var id = scriptsArray[i].id;
                 var script = new Script();
 
@@ -34,7 +35,7 @@ Service.prototype.fetchAllScripts = function(callback) {
                 script.path = scriptsArray[i].path;
                 script.logPath = scriptsArray[i].logPath;
 
-                scriptsObjs[id] = script;
+                scriptsObjs.push(script);
             }
 
             callback(scriptsObjs);
@@ -231,13 +232,14 @@ Script.prototype.finishFetchingLog = function() {
         var scriptContainer = $('#nfg-script-container');
         scriptContainer.find('tbody').html('');
 
-        for (var key in scripts) {
-            var script = scripts[key];
+        var len = scripts.length;
+        for (var i=0; i<len; i++) {
+            var script = scripts[i];
             // Prepare the template object with the real data
-            insertInScriptTemplateDataFromScript(scripts[key]);
+            insertInScriptTemplateDataFromScript(script);
 
             // Generate actual HTML content to be inserted in the table
-            var htmlContent = htmlContentForScript(scripts[key]);
+            var htmlContent = htmlContentForScript(script);
 
             // Insert the finished HTML code in the table
             scriptContainer.find('tbody').append(htmlContent);
@@ -325,14 +327,14 @@ Script.prototype.finishFetchingLog = function() {
 
         indicateScriptTableLoading();
 
-        if (scripts[scriptID].status == SCRIPT_STATUS_PLAYING) {
-            scripts[scriptID].stopScript(function() {
+        if (scriptForID(scriptID).status == SCRIPT_STATUS_PLAYING) {
+            scriptForID(scriptID).stopScript(function() {
                 refreshScripts(function() {
                     indicateScriptTableNotLoading();
                 });
             });
         } else {
-            scripts[scriptID].startScript(function() {
+            scriptForID(scriptID).startScript(function() {
                 refreshScripts(function() {
                     indicateScriptTableNotLoading();
                 });
@@ -368,13 +370,13 @@ Script.prototype.finishFetchingLog = function() {
 
             // Find out what which property is being edited
             if (container.hasClass('nfg-editable-field-name')) {
-                scripts[scriptID].name = newContent;
+                scriptForID(scriptID).name = newContent;
             }
 
             // Save script
             indicateScriptTableLoading();
 
-            scripts[scriptID].saveScript(function(success) {
+            scriptForID(scriptID).saveScript(function(success) {
                 refreshScripts(function() {
                     indicateScriptTableNotLoading();
                 });
@@ -389,7 +391,7 @@ Script.prototype.finishFetchingLog = function() {
         // save the ID of the script that is being edited
         modalBox.data('script-id', scriptID);
 
-        if (scripts[scriptID].status == SCRIPT_STATUS_PLAYING) {
+        if (scriptForID(scriptID).status == SCRIPT_STATUS_PLAYING) {
             modalBox.removeClass('nfg-remove-script-modal-state-not-running');
             modalBox.addClass('nfg-remove-script-modal-state-running');
         } else {
@@ -403,7 +405,7 @@ Script.prototype.finishFetchingLog = function() {
         var logBody = $('#nfg-log-body');
         var modal = $('#nfg-log-modal').data('script-id', scriptID);
 
-        scripts[scriptID].startFetchingLog(function(log) {
+        scriptForID(scriptID).startFetchingLog(function(log) {
             logBody.html(log);
         }, function(logUpdate) {
             logBody.append(logUpdate);
@@ -458,7 +460,7 @@ Script.prototype.finishFetchingLog = function() {
 
         indicateScriptTableLoading();
 
-        service.removeScript(scripts[scriptID], function() {
+        service.removeScript(scriptForID(scriptID), function() {
             refreshScripts(function() {
                 indicateScriptTableNotLoading();
             });
@@ -470,8 +472,8 @@ Script.prototype.finishFetchingLog = function() {
 
         indicateScriptTableLoading();
 
-        scripts[scriptID].stopScript(function() {
-            service.removeScript(scripts[scriptID], function() {
+        scriptForID(scriptID).stopScript(function() {
+            service.removeScript(scriptForID(scriptID), function() {
                 refreshScripts(function() {
                     indicateScriptTableNotLoading();
                 });
@@ -489,6 +491,16 @@ Script.prototype.finishFetchingLog = function() {
     }
     function closeLogButtonClicked() {
         var scriptID = $('#nfg-log-modal').data('script-id');
-        scripts[scriptID].finishFetchingLog();
+        scriptForID(scriptID).finishFetchingLog();
     }
+
+    // Utility
+    function scriptForID(id) {
+        var len = scripts.length;
+        for (var i=0; i<len; i++) {
+            if (scripts[i].id == id) {
+                return scripts[i];
+            }
+        }
+    };
 })(jQuery);

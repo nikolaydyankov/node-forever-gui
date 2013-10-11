@@ -38,6 +38,7 @@ exports.handleRequest = handleRequest;
 function fetchAll(res) {
     dbManager.getScripts(function(scripts) {
         var storedScripts = scripts;
+
         execManager.executeListCommand(function(result) {
             var runningScripts = result;
 
@@ -71,6 +72,8 @@ function fetchAll(res) {
                 }
             }
 
+            printScriptsInOrder(allScripts);
+
             // Save all scripts
             dbManager.saveScripts(allScripts, function() {
                 var json = JSON.stringify(allScripts);
@@ -93,6 +96,8 @@ function stopAll(res) {
 }
 function addScript(script, res) {
     dbManager.getScripts(function(scripts) {
+        printScriptsInOrder(scripts);
+
         var len = scripts.length;
         var scriptExists = false;
 
@@ -112,6 +117,8 @@ function addScript(script, res) {
                 script.status = 0;
                 script.log = '';
                 scripts.push(script);
+
+                printScriptsInOrder(scripts);
 
                 dbManager.saveScripts(scripts, function() {
                     res.end();
@@ -174,6 +181,11 @@ function startScriptsRecursion(scripts, callback) {
 }
 
 
-
+function printScriptsInOrder(scripts) {
+    var len = scripts.length;
+    for (var i=0; i<len; i++) {
+        console.log(scripts[i].name);
+    }
+}
 
 
