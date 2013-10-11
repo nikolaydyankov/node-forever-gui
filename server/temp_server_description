@@ -27,7 +27,7 @@ Script object properties:
 - sysname (used for stopping scripts)
 - status
 - path (used as ID)
-- log path
+- log
 
 server modules:
 - request-handler - logic

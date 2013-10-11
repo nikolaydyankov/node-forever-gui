@@ -69,10 +69,9 @@ function fetchAll(res) {
                     allScripts[existingScriptIndex].id = runningScripts[i].id;
                     allScripts[existingScriptIndex].status = 1;
                     allScripts[existingScriptIndex].sysname = runningScripts[i].sysname;
+                    allScripts[existingScriptIndex].log = runningScripts[i].log;
                 }
             }
-
-            printScriptsInOrder(allScripts);
 
             // Save all scripts
             dbManager.saveScripts(allScripts, function() {
@@ -96,8 +95,6 @@ function stopAll(res) {
 }
 function addScript(script, res) {
     dbManager.getScripts(function(scripts) {
-        printScriptsInOrder(scripts);
-
         var len = scripts.length;
         var scriptExists = false;
 
@@ -118,8 +115,6 @@ function addScript(script, res) {
                 script.log = '';
                 scripts.push(script);
 
-                printScriptsInOrder(scripts);
-
                 dbManager.saveScripts(scripts, function() {
                     res.end();
                     return;
@@ -139,8 +134,6 @@ function updateScript(script, res) {
             }
         }
 
-        console.log(storedScripts);
-
         dbManager.saveScripts(storedScripts, function() {
             res.end();
         });
@@ -157,7 +150,20 @@ function startScript(script, res) {
     });
 }
 function removeScript(script, res) {
+    dbManager.getScripts(function(scripts) {
+        var len = scripts.length;
 
+        for (var i=0; i<len; i++) {
+            if (scripts[i].path == script.path) {
+                scripts.splice(i, 1);
+                break;
+            }
+        }
+
+        dbManager.saveScripts(scripts, function() {
+            res.end();
+        });
+    });
 }
 function fetchLog(script, res) {
 
@@ -179,13 +185,11 @@ function startScriptsRecursion(scripts, callback) {
         callback();
     }
 }
-
-
-function printScriptsInOrder(scripts) {
-    var len = scripts.length;
-    for (var i=0; i<len; i++) {
-        console.log(scripts[i].name);
-    }
-}
+//function printScriptsInOrder(scripts) {
+//    var len = scripts.length;
+//    for (var i=0; i<len; i++) {
+//        console.log(scripts[i].name);
+//    }
+//}
 
 

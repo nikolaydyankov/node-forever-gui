@@ -124,3 +124,7 @@ td:hover .nfg-editable-field-edit-button {
 .modal-open {
     margin-right: 0 !important;
 }
+
+#nfg-display-log-path-container {
+    display: inline;
+}

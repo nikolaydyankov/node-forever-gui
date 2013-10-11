@@ -33,7 +33,7 @@ Service.prototype.fetchAllScripts = function(callback) {
                 script.sysname = scriptsArray[i].sysname;
                 script.status = (scriptsArray[i].status == 1) ? SCRIPT_STATUS_PLAYING : SCRIPT_STATUS_PAUSED;
                 script.path = scriptsArray[i].path;
-                script.logPath = scriptsArray[i].logPath;
+                script.log = scriptsArray[i].log;
 
                 scriptsObjs.push(script);
             }
@@ -57,8 +57,18 @@ Service.prototype.addScript = function(script, callback) {
     });
 }
 Service.prototype.removeScript = function(script, callback) {
-    // remove the script from db, script.id
-    callback();
+    var plainScript = script.getPlainObject();
+
+    $.ajax({
+        type : "POST",
+        url : service.serverURL + 'remove_script',
+        data : {
+            "script" : plainScript
+        },
+        success : function(error) {
+            callback(error);
+        }
+    });
 }
 Service.prototype.startAllScripts = function(callback) {
     // Start all scripts that exist in the database
@@ -87,7 +97,7 @@ function Script () {
     this.sysname = '';
     this.status = '';
     this.path = '';
-    this.logPath = '';
+    this.log = '';
 }
 Script.prototype.getPlainObject = function() {
     var script = {
@@ -96,7 +106,7 @@ Script.prototype.getPlainObject = function() {
         "sysname" : this.sysname,
         "status" : this.status,
         "path" : this.path,
-        "logPath" : this.logPath
+        "log" : this.log
     };
 
     return script;
@@ -251,7 +261,7 @@ Script.prototype.finishFetchingLog = function() {
 
         templateContainer.find('#nfg-script-template-col1').find('.nfg-editable-field-content').html(script.name);
         templateContainer.find('#nfg-script-template-col3').html(script.path);
-        templateContainer.find('#nfg-script-template-col4').html(script.logPath);
+        templateContainer.find('#nfg-script-template-col4').find('#nfg-display-log-path-container').html(script.log);
 
         if (script.status == SCRIPT_STATUS_PLAYING) {
             templateContainer.find('#nfg-script-template-col2').find('button').removeClass('btn-default');

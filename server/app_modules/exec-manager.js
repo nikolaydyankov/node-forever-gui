@@ -59,7 +59,7 @@ function executeListCommand(callback) {
                     sysname : sysNames[i],
                     status : 1,
                     path : pathForID[IDs[i]],
-                    logPath : logPaths[i]
+                    log : logPaths[i]
                 }
 
                 scripts.push(script);
