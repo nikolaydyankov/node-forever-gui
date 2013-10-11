@@ -21,6 +21,9 @@ server requests:
 - fetch_log
     { "script" : theScriptJSON }
 
+- finish_fetching_log
+    { "script" : theScriptJSON }
+
 Script object properties:
 - id
 - name

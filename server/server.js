@@ -11,6 +11,8 @@ app.configure(function(){
 var httpServer = http.createServer(app);
 httpServer.listen(80);
 
+var io = require('socket.io').listen(httpServer);
+
 app.post('/fetch_all', function(req, res) {
     requestHandler.handleRequest('/fetch_all', req, res);
 });
@@ -41,3 +43,7 @@ app.post('/fetch_log', function(req, res) {
 
 // Unix commands exec: http://stackoverflow.com/a/12941138/1156999
 // Basic authentication: http://stackoverflow.com/a/12148212/1156999
+
+requestHandler.requestIO = function() {
+    return io;
+}

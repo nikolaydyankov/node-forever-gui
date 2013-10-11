@@ -112,7 +112,6 @@ Script.prototype.getPlainObject = function() {
     return script;
 };
 Script.prototype.saveScript = function(callback) {
-    // Save...
     $.ajax({
         type : "POST",
         url : service.serverURL + 'update_script',
@@ -125,7 +124,6 @@ Script.prototype.saveScript = function(callback) {
     });
 };
 Script.prototype.startScript = function(callback) {
-    // Start...
     $.ajax({
         type : "POST",
         url : service.serverURL + 'start_script',
@@ -138,7 +136,6 @@ Script.prototype.startScript = function(callback) {
     });
 };
 Script.prototype.stopScript = function(callback) {
-    // Stop...
     $.ajax({
         type : "POST",
         url : service.serverURL + 'stop_script',
@@ -151,11 +148,28 @@ Script.prototype.stopScript = function(callback) {
     });
 };
 Script.prototype.startFetchingLog = function(callback, updatedLogCallback) {
-    callback('Current log');
+    $.ajax({
+        type : "POST",
+        url : service.serverURL + 'fetch_log',
+        data : {
+            "script" : this.getPlainObject()
+        },
+        success : function(data) {
+            callback(data);
 
-    setTimeout(function() {
-        updatedLogCallback('\nLog update');
-    }, 1000);
+            var socket = io.connect();
+            socket.on('connect', function() {
+                console.log('connected');
+            });
+
+            socket.on('news', function (data) {
+                console.log(data);
+                updatedLogCallback(data);
+            });
+        }
+    });
+
+
 };
 Script.prototype.finishFetchingLog = function() {
 
@@ -322,7 +336,7 @@ Script.prototype.finishFetchingLog = function() {
         });
 
         // Log button
-        $('#nfg-display-log-button').off('click').on('click', function(e) {
+        $('.nfg-display-log-button').off('click').on('click', function(e) {
             if (shouldRespondToEvents) {
                 logButtonClicked($(e.target));
             }

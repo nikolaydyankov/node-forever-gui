@@ -11,7 +11,6 @@ function saveScripts(scripts, callback) {
         callback();
     });
 }
-
 function getScripts(callback) {
     fs.readFile(file, 'utf8', function(err, data) {
         if (err) {
@@ -27,7 +26,6 @@ function getScripts(callback) {
         }
     });
 }
-
 function doesScriptExistWithPath(path, callback) {
     fs.readFile(path, function(err, data) {
         if (err) {
@@ -37,7 +35,23 @@ function doesScriptExistWithPath(path, callback) {
         }
     });
 }
+function fetchLogWithPath(logPath, callback) {
+    fs.readFile(logPath, 'utf8', function(err, data) {
+        if (err) {
+            callback(false);
+        } else {
+            callback(data);
+        }
+    });
+
+    exports.requestIO().sockets.on('connection', function (socket) {
+        setInterval(function() {
+            socket.emit('news', { hello: 'world' });
+        }, 500);
+    });
+}
 
 exports.saveScripts = saveScripts;
 exports.getScripts = getScripts;
 exports.doesScriptExistWithPath = doesScriptExistWithPath;
+exports.fetchLogWithPath = fetchLogWithPath;

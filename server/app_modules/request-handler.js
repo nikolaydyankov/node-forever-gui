@@ -1,6 +1,10 @@
 var execManager = require(__dirname + '/exec-manager.js');
 var dbManager = require(__dirname + '/db-manager.js');
 
+dbManager.requestIO = function() {
+    return exports.requestIO();
+}
+
 function handleRequest(url, req, res) {
     if (url == '/fetch_all') {
         fetchAll(res);
@@ -28,6 +32,9 @@ function handleRequest(url, req, res) {
     }
     if (url == '/fetch_log') {
         fetchLog(req.body.script, res);
+    }
+    if (url == '/finish_fetching_log') {
+        finishFetchingLog(req.body.script, res);
     }
 }
 
@@ -166,7 +173,17 @@ function removeScript(script, res) {
     });
 }
 function fetchLog(script, res) {
+    dbManager.fetchLogWithPath(script.log, function(data) {
+        if (!data) {
+            res.end();
+            return;
+        }
 
+        res.end(data);
+    });
+}
+function finishFetchingLog(script, res) {
+    res.end();
 }
 
 // PRIVATE

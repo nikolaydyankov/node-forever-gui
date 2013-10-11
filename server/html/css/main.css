@@ -106,7 +106,7 @@ td:hover .nfg-editable-field-edit-button {
 }
 
 #nfg-log-body {
-    height: 2000px;
+    min-height: 600px;
     width: 100%;
     background: black;
     font: 12px/18px monospace;
