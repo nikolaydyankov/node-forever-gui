@@ -37,16 +37,23 @@ Service.prototype.fetchAllScripts = function(callback) {
                 scriptsObjs[id] = script;
             }
 
-            l(scriptsObjs);
-
             callback(scriptsObjs);
         }
     });
 };
 Service.prototype.addScript = function(script, callback) {
-    var success = true;
+    var plainScript = script.getPlainObject();
 
-    callback(success);
+    $.ajax({
+        type : "POST",
+        url : service.serverURL + 'add_script',
+        data : {
+            "script" : plainScript
+        },
+        success : function(error) {
+            callback(error);
+        }
+    });
 }
 Service.prototype.removeScript = function(script, callback) {
     // remove the script from db, script.id
@@ -94,8 +101,6 @@ Script.prototype.getPlainObject = function() {
     return script;
 };
 Script.prototype.saveScript = function(callback) {
-    l(this.getPlainObject());
-
     // Save...
     $.ajax({
         type : "POST",
@@ -244,6 +249,7 @@ Script.prototype.finishFetchingLog = function() {
 
         templateContainer.find('#nfg-script-template-col1').find('.nfg-editable-field-content').html(script.name);
         templateContainer.find('#nfg-script-template-col3').html(script.path);
+        templateContainer.find('#nfg-script-template-col4').html(script.logPath);
 
         if (script.status == SCRIPT_STATUS_PLAYING) {
             templateContainer.find('#nfg-script-template-col2').find('button').removeClass('btn-default');
@@ -426,20 +432,20 @@ Script.prototype.finishFetchingLog = function() {
 
     // Modal buttons
     function addScriptModalButtonClicked() {
-        var scriptName = $('nfg-add-script-modal-input-name').val();
-        var scriptPath = $('nfg-add-script-modal-input-path').val();
+        var scriptName = $('#nfg-add-script-modal-input-name').val();
+        var scriptPath = $('#nfg-add-script-modal-input-path').val();
 
         var newScript = new Script();
         newScript.name = scriptName;
         newScript.path = scriptPath;
         newScript.status = SCRIPT_STATUS_PAUSED;
 
-        service.addScript(newScript, function(success) {
-            if (!success) {
-                alert('This script already exists! The scripts list will now refresh.');
-            }
+        indicateScriptTableLoading();
 
-            indicateScriptTableLoading();
+        service.addScript(newScript, function(error) {
+            if (error) {
+                alert(error);
+            }
 
             refreshScripts(function() {
                 indicateScriptTableNotLoading();

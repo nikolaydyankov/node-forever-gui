@@ -38,7 +38,6 @@ exports.handleRequest = handleRequest;
 function fetchAll(res) {
     dbManager.getScripts(function(scripts) {
         var storedScripts = scripts;
-
         execManager.executeListCommand(function(result) {
             var runningScripts = result;
 
@@ -66,6 +65,7 @@ function fetchAll(res) {
                     allScripts.push(runningScripts[i]);
                 } else {
                     // if script does exist in storedScripts, change the status of the storedScript to 1
+                    allScripts[existingScriptIndex].id = runningScripts[i].id;
                     allScripts[existingScriptIndex].status = 1;
                     allScripts[existingScriptIndex].sysname = runningScripts[i].sysname;
                 }
@@ -92,7 +92,37 @@ function stopAll(res) {
     });
 }
 function addScript(script, res) {
+    dbManager.getScripts(function(scripts) {
+        var len = scripts.length;
+        var scriptExists = false;
 
+        // Check if script exists
+        for (var i=0; i<len; i++) {
+            if (scripts[i].path == script.path) {
+                scriptExists = true;
+                res.end('Script already exists. Refreshing scripts...');
+                return;
+            }
+        }
+
+        // Check if file exists
+        dbManager.doesScriptExistWithPath(script.path, function(scriptExists) {
+            if (scriptExists) {
+                script.id = Math.floor(Math.random() * 9999) + 1;
+                script.status = 0;
+                script.log = '';
+                scripts.push(script);
+
+                dbManager.saveScripts(scripts, function() {
+                    res.end();
+                    return;
+                });
+            } else {
+                res.end('Error: Could not find script at this path.');
+                return;
+            }
+        });
+    });
 }
 function updateScript(script, res) {
     dbManager.getScripts(function(storedScripts) {

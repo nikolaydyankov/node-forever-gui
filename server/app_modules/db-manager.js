@@ -28,5 +28,16 @@ function getScripts(callback) {
     });
 }
 
+function doesScriptExistWithPath(path, callback) {
+    fs.readFile(path, function(err, data) {
+        if (err) {
+            callback(false);
+        } else {
+            callback(true);
+        }
+    });
+}
+
 exports.saveScripts = saveScripts;
 exports.getScripts = getScripts;
+exports.doesScriptExistWithPath = doesScriptExistWithPath;
