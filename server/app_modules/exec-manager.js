@@ -4,9 +4,9 @@ var exec =              require('child_process').exec;
 function executeListCommand(callback) {
     execute('forever list --plain', function(stdout) {
         // Get names
-        var names = stdout.match(/\S+\.js/g);
+        var sysNames = stdout.match(/\S+\.js/g);
 
-        if (!names) {
+        if (!sysNames) {
             console.log('No scripts are currently running.');
             callback([]);
             return;
@@ -52,12 +52,12 @@ function executeListCommand(callback) {
             // Construct Script objects with parsed data
             var scripts = new Array();
 
-            for (var i=0; i<names.length; i++) {
+            for (var i=0; i<sysNames.length; i++) {
                 var script = {
                     id : IDs[i],
                     name : 'Unnamed',
+                    sysname : sysNames[i],
                     status : 1,
-                    filename : names[i],
                     path : pathForID[IDs[i]],
                     logPath : logPaths[i]
                 }
@@ -65,29 +65,24 @@ function executeListCommand(callback) {
                 scripts.push(script);
             }
 
-//            console.log(scripts);
-
             callback(scripts);
         });
     });
 }
 function startScriptWithPath(scriptPath, callback) {
-    console.log('forever start ' + scriptPath);
-
     execute('forever start ' + scriptPath, function(stdout) {
         callback();
     });
 }
-function stopScriptWithFilename(filename, callback) {
-    console.log('forever stop ' + filename);
-    execute('forever stop ' + filename, function(stdout) {
+function stopScriptWithSysName(scriptSysName, callback) {
+    execute('forever stop ' + scriptSysName, function(stdout) {
         callback();
     });
 }
 
 exports.executeListCommand = executeListCommand;
 exports.startScriptWithPath = startScriptWithPath;
-exports.stopScriptWithFilename = stopScriptWithFilename;
+exports.stopScriptWithSysName = stopScriptWithSysName;
 
 // PRIVATE
 

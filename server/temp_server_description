@@ -24,9 +24,9 @@ server requests:
 Script object properties:
 - id
 - name
+- sysname (used for stopping scripts)
 - status
-- filename
-- path
+- path (used as ID)
 - log path
 
 server modules:

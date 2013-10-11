@@ -42,27 +42,32 @@ function fetchAll(res) {
         execManager.executeListCommand(function(result) {
             var runningScripts = result;
 
-            // Merge into "allScripts" and remove duplicated
-            var allScripts = runningScripts;
+            // Set all statuses to 0
+            for (var s=0; s<storedScripts.length; s++) {
+                storedScripts[s].status = 0;
+            }
 
-            // Loop over all storedScripts. Compare paths to see if a script exists in runningScripts. If it doesn't exist in runningScripts, add it.
-            for (var i=0; i<storedScripts.length; i++) {
-                var scriptExists = false;
-                var runningScriptsIndex = 0;
+            // Check if there are new scripts in runningScripts.
+            var allScripts = storedScripts;
 
-                for (var j=0; j<runningScripts.length; j++) {
-                    if (runningScripts[j].path == storedScripts[i].path) {
-                        scriptExists = true;
-                        runningScriptsIndex = j;
-                        break;
+            for (var i=0; i<runningScripts.length; i++) {
+                var scriptIsNew = true;
+                var existingScriptIndex = 0;
+
+                for (var j=0; j<storedScripts.length; j++) {
+                    if (storedScripts[j].path == runningScripts[i].path) {
+                        scriptIsNew = false;
+                        existingScriptIndex = j;
                     }
                 }
 
-                if (!scriptExists) {
-                    storedScripts[i].status = 0;
-                    allScripts.push(storedScripts[i]);
+                if (scriptIsNew) {
+                    // If script does not exist in storedScripts, add it
+                    allScripts.push(runningScripts[i]);
                 } else {
-                    allScripts[j].name = storedScripts[i].name;
+                    // if script does exist in storedScripts, change the status of the storedScript to 1
+                    allScripts[existingScriptIndex].status = 1;
+                    allScripts[existingScriptIndex].sysname = runningScripts[i].sysname;
                 }
             }
 
@@ -88,7 +93,6 @@ function updateScript(script, res) {
         for (var i=0; i<storedScripts.length; i++) {
             if (storedScripts[i].path == script.path) {
                 storedScripts[i] = script;
-                console.log(storedScripts[i]);
             }
         }
 
@@ -98,7 +102,7 @@ function updateScript(script, res) {
     });
 }
 function stopScript(script, res) {
-    execManager.stopScriptWithFilename(script.filename, function() {
+    execManager.stopScriptWithSysName(script.sysname, function() {
         res.end();
     });
 }

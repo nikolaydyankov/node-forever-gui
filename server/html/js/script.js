@@ -29,8 +29,8 @@ Service.prototype.fetchAllScripts = function(callback) {
 
                 script.id = id;
                 script.name = scriptsArray[i].name;
+                script.sysname = scriptsArray[i].sysname;
                 script.status = (scriptsArray[i].status == 1) ? SCRIPT_STATUS_PLAYING : SCRIPT_STATUS_PAUSED;
-                script.filename = scriptsArray[i].filename;
                 script.path = scriptsArray[i].path;
                 script.logPath = scriptsArray[i].logPath;
 
@@ -64,16 +64,16 @@ Service.prototype.stopAllScripts = function(callback) {
 function Script () {
     this.id = '';
     this.name = '';
+    this.sysname = '';
     this.status = '';
     this.path = '';
-    this.filename = '';
     this.logPath = '';
 }
 Script.prototype.getPlainObject = function() {
     var script = {
         "id" : this.id,
         "name" : this.name,
-        "filename" : this.filename,
+        "sysname" : this.sysname,
         "status" : this.status,
         "path" : this.path,
         "logPath" : this.logPath
@@ -82,6 +82,8 @@ Script.prototype.getPlainObject = function() {
     return script;
 };
 Script.prototype.saveScript = function(callback) {
+    l(this.getPlainObject());
+
     // Save...
     $.ajax({
         type : "POST",
