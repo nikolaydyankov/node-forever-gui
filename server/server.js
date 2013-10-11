@@ -2,6 +2,8 @@ var http =              require('http');
 var express =           require('express');
 var requestHandler =    require(__dirname + '/app_modules/request-handler.js');
 var app =               express();
+var fs = require('fs');
+
 
 app.configure(function(){
     app.use(express.static(__dirname + '/html'));
@@ -47,3 +49,39 @@ app.post('/fetch_log', function(req, res) {
 requestHandler.requestIO = function() {
     return io;
 }
+
+io.sockets.on('connection', function(socket) {
+    console.log('connection');
+
+    var watcher;
+    var logPath;
+
+    socket.on('watch', function(data) {
+        logPath = data.path;
+        console.log('watching: ', logPath);
+
+        watcher = fs.watch(logPath, function() {
+            fs.readFile(logPath, 'utf8', function(err, data) {
+                socket.emit('log', data);
+                console.log('data');
+            });
+        });
+    });
+
+    socket.on('unwatch', function(data) {
+        console.log('unwatching: ' + data.path);
+        fs.unwatchFile(data.path);
+
+        if (watcher) {
+            watcher.close();
+        }
+    });
+
+    socket.on('disconnect', function() {
+        console.log('unwatching: ' + logPath);
+        fs.unwatchFile(logPath);
+        if (watcher) {
+            watcher.close();
+        }
+    });
+});

@@ -43,11 +43,8 @@ function fetchLogWithPath(logPath, callback) {
             callback(data);
         }
     });
-
     exports.requestIO().sockets.on('connection', function (socket) {
-        setInterval(function() {
-            socket.emit('news', { hello: 'world' });
-        }, 500);
+
     });
 }
 

@@ -10,6 +10,7 @@ var SCRIPT_STATUS_PAUSED = 0;
 var scripts = [];
 var service = new Service();
 var shouldRespondToEvents = true;
+var socket = io.connect();
 
 // Classes
 function Service () {
@@ -147,7 +148,11 @@ Script.prototype.stopScript = function(callback) {
         }
     });
 };
-Script.prototype.startFetchingLog = function(callback, updatedLogCallback) {
+Script.prototype.startFetchingLog = function(callback) {
+    var log = this.log;
+
+    console.log(log);
+
     $.ajax({
         type : "POST",
         url : service.serverURL + 'fetch_log',
@@ -157,22 +162,25 @@ Script.prototype.startFetchingLog = function(callback, updatedLogCallback) {
         success : function(data) {
             callback(data);
 
-            var socket = io.connect();
-            socket.on('connect', function() {
-                console.log('connected');
-            });
-
-            socket.on('news', function (data) {
-                console.log(data);
-                updatedLogCallback(data);
+            socket.emit('watch', { path : log });
+            socket.on('log', function (data) {
+                callback(data);
             });
         }
     });
-
-
 };
 Script.prototype.finishFetchingLog = function() {
-
+    socket.emit('unwatch', { path : this.log });
+//    $.ajax({
+//        type : "POST",
+//        url : service.serverURL + 'finish_fetching_log',
+//        data : {
+//            "script" : this.getPlainObject()
+//        },
+//        success : function() {
+//
+//        }
+//    });
 };
 
 (function($, undefined) {
@@ -427,12 +435,12 @@ Script.prototype.finishFetchingLog = function() {
     function logButtonClicked(buttonEl) {
         var scriptID = buttonEl.closest('tr').attr('id');
         var logBody = $('#nfg-log-body');
+        var logContainer = $('#nfg-log-container');
         var modal = $('#nfg-log-modal').data('script-id', scriptID);
 
         scriptForID(scriptID).startFetchingLog(function(log) {
             logBody.html(log);
-        }, function(logUpdate) {
-            logBody.append(logUpdate);
+            logContainer.get(0).scrollTop = logContainer.get(0).scrollHeight;
         });
     }
     // Main Buttons
