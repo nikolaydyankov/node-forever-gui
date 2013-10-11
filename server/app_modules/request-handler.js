@@ -45,7 +45,7 @@ function fetchAll(res) {
             // Merge into "allScripts" and remove duplicated
             var allScripts = runningScripts;
 
-            // Loop over all storedScripts. If a script doesn't exist in running scripts, add it.
+            // Loop over all storedScripts. Compare paths to see if a script exists in runningScripts. If it doesn't exist in runningScripts, add it.
             for (var i=0; i<storedScripts.length; i++) {
                 var scriptExists = false;
 

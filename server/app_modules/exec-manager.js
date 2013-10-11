@@ -6,6 +6,12 @@ function executeListCommand(callback) {
         // Get names
         var names = stdout.match(/\S+\.js/g);
 
+        if (!names) {
+            console.log('No scripts are currently running.');
+            callback([]);
+            return;
+        }
+
         // Get log paths
         var logPaths = stdout.match(/\/\S+\.log/g);
 
