@@ -98,10 +98,14 @@ function updateScript(script, res) {
     });
 }
 function stopScript(script, res) {
-
+    execManager.stopScriptWithFilename(script.filename, function() {
+        res.end();
+    });
 }
 function startScript(script, res) {
-
+    execManager.startScriptWithPath(script.path, function() {
+        res.end();
+    });
 }
 function removeScript(script, res) {
 

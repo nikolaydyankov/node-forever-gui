@@ -26,6 +26,7 @@ Service.prototype.fetchAllScripts = function(callback) {
             for (var i=0; i<scriptsArray.length; i++) {
                 var id = scriptsArray[i].id;
                 var script = new Script();
+
                 script.id = id;
                 script.name = scriptsArray[i].name;
                 script.status = (scriptsArray[i].status == 1) ? SCRIPT_STATUS_PLAYING : SCRIPT_STATUS_PAUSED;
@@ -35,6 +36,8 @@ Service.prototype.fetchAllScripts = function(callback) {
 
                 scriptsObjs[id] = script;
             }
+
+            l(scriptsObjs);
 
             callback(scriptsObjs);
         }
@@ -63,23 +66,28 @@ function Script () {
     this.name = '';
     this.status = '';
     this.path = '';
+    this.filename = '';
     this.logPath = '';
 }
-Script.prototype.saveScript = function(callback) {
-    // Save...
+Script.prototype.getPlainObject = function() {
     var script = {
         "id" : this.id,
         "name" : this.name,
+        "filename" : this.filename,
         "status" : this.status,
         "path" : this.path,
         "logPath" : this.logPath
     };
 
+    return script;
+};
+Script.prototype.saveScript = function(callback) {
+    // Save...
     $.ajax({
         type : "POST",
         url : service.serverURL + 'update_script',
         data : {
-            "script" : script
+            "script" : this.getPlainObject()
         },
         success : function() {
             callback();
@@ -88,11 +96,29 @@ Script.prototype.saveScript = function(callback) {
 };
 Script.prototype.startScript = function(callback) {
     // Start...
-    callback();
+    $.ajax({
+        type : "POST",
+        url : service.serverURL + 'start_script',
+        data : {
+            "script" : this.getPlainObject()
+        },
+        success : function() {
+            callback();
+        }
+    });
 };
 Script.prototype.stopScript = function(callback) {
     // Stop...
-    callback();
+    $.ajax({
+        type : "POST",
+        url : service.serverURL + 'stop_script',
+        data : {
+            "script" : this.getPlainObject()
+        },
+        success : function() {
+            callback();
+        }
+    });
 };
 Script.prototype.startFetchingLog = function(callback, updatedLogCallback) {
     callback('Current log');

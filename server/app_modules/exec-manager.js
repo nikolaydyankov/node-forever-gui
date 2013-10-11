@@ -16,7 +16,7 @@ function executeListCommand(callback) {
         var logPaths = stdout.match(/\/\S+\.log/g);
 
         // Get scripts ID's
-        var idsWithExtraCharacters = stdout.match(/\d+\s+\//g);
+        var idsWithExtraCharacters = stdout.match(/\s\d+\s+\//g);
         var IDs = new Array();
 
         for (var i=0; i<idsWithExtraCharacters.length; i++) {
@@ -65,12 +65,29 @@ function executeListCommand(callback) {
                 scripts.push(script);
             }
 
+//            console.log(scripts);
+
             callback(scripts);
         });
     });
 }
+function startScriptWithPath(scriptPath, callback) {
+    console.log('forever start ' + scriptPath);
+
+    execute('forever start ' + scriptPath, function(stdout) {
+        callback();
+    });
+}
+function stopScriptWithFilename(filename, callback) {
+    console.log('forever stop ' + filename);
+    execute('forever stop ' + filename, function(stdout) {
+        callback();
+    });
+}
 
 exports.executeListCommand = executeListCommand;
+exports.startScriptWithPath = startScriptWithPath;
+exports.stopScriptWithFilename = stopScriptWithFilename;
 
 // PRIVATE
 
