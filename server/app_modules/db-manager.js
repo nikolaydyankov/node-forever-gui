@@ -2,6 +2,8 @@ var fs = require('fs');
 var file = __dirname + '/db.json';
 
 function saveScripts(scripts, callback) {
+    console.log(scripts);
+
     fs.writeFile(file, JSON.stringify(scripts), { encoding : 'utf8' }, function(err) {
         if (err) {
             console.log(err);

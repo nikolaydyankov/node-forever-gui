@@ -48,16 +48,21 @@ function fetchAll(res) {
             // Loop over all storedScripts. Compare paths to see if a script exists in runningScripts. If it doesn't exist in runningScripts, add it.
             for (var i=0; i<storedScripts.length; i++) {
                 var scriptExists = false;
+                var runningScriptsIndex = 0;
 
                 for (var j=0; j<runningScripts.length; j++) {
                     if (runningScripts[j].path == storedScripts[i].path) {
                         scriptExists = true;
+                        runningScriptsIndex = j;
+                        break;
                     }
                 }
 
                 if (!scriptExists) {
                     storedScripts[i].status = 0;
                     allScripts.push(storedScripts[i]);
+                } else {
+                    allScripts[j].name = storedScripts[i].name;
                 }
             }
 
@@ -79,7 +84,18 @@ function addScript(script, res) {
 
 }
 function updateScript(script, res) {
+    dbManager.getScripts(function(storedScripts) {
+        for (var i=0; i<storedScripts.length; i++) {
+            if (storedScripts[i].path == script.path) {
+                storedScripts[i] = script;
+                console.log(storedScripts[i]);
+            }
+        }
 
+        dbManager.saveScripts(storedScripts, function() {
+            res.end();
+        });
+    });
 }
 function stopScript(script, res) {
 

@@ -3,8 +3,8 @@ function l(msg) {
 }
 
 // Constants
-var SCRIPT_STATUS_PLAYING = 'playing';
-var SCRIPT_STATUS_PAUSED = 'paused';
+var SCRIPT_STATUS_PLAYING = 1;
+var SCRIPT_STATUS_PAUSED = 0;
 
 // Vars
 var scripts = {};
@@ -67,7 +67,24 @@ function Script () {
 }
 Script.prototype.saveScript = function(callback) {
     // Save...
-    callback();
+    var script = {
+        "id" : this.id,
+        "name" : this.name,
+        "status" : this.status,
+        "path" : this.path,
+        "logPath" : this.logPath
+    };
+
+    $.ajax({
+        type : "POST",
+        url : service.serverURL + 'update_script',
+        data : {
+            "script" : script
+        },
+        success : function() {
+            callback();
+        }
+    });
 };
 Script.prototype.startScript = function(callback) {
     // Start...
@@ -161,10 +178,8 @@ Script.prototype.finishFetchingLog = function() {
     }
     // Table will fade and loading text/animation will appear. For now it will only become empty.
     function indicateScriptTableNotLoading() {
-        setTimeout(function() {
-            shouldRespondToEvents = true;
-            $('#nfg-script-container').css('opacity', 1.0);
-        }, 1000);
+        shouldRespondToEvents = true;
+        $('#nfg-script-container').css('opacity', 1.0);
     }
     // Iterate over each script in the "scripts" global var and insert generated HTML in the table
     function displayScripts() {
@@ -316,7 +331,7 @@ Script.prototype.finishFetchingLog = function() {
             // Save script
             indicateScriptTableLoading();
 
-            scripts[scriptID].saveScript(function() {
+            scripts[scriptID].saveScript(function(success) {
                 refreshScripts(function() {
                     indicateScriptTableNotLoading();
                 });
