@@ -102,6 +102,8 @@ function updateScript(script, res) {
             }
         }
 
+        console.log(storedScripts);
+
         dbManager.saveScripts(storedScripts, function() {
             res.end();
         });

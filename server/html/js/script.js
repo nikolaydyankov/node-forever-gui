@@ -243,7 +243,7 @@ Script.prototype.finishFetchingLog = function() {
         var templateContainer = $('#nfg-script-template');
 
         templateContainer.find('#nfg-script-template-col1').find('.nfg-editable-field-content').html(script.name);
-        templateContainer.find('#nfg-script-template-col3').find('.nfg-editable-field-content').html(script.path);
+        templateContainer.find('#nfg-script-template-col3').html(script.path);
 
         if (script.status == SCRIPT_STATUS_PLAYING) {
             templateContainer.find('#nfg-script-template-col2').find('button').removeClass('btn-default');
@@ -361,9 +361,6 @@ Script.prototype.finishFetchingLog = function() {
             container.find('.nfg-editable-field-content').html(newContent);
 
             // Find out what which property is being edited
-            if (container.hasClass('nfg-editable-field-path')) {
-                scripts[scriptID].path = newContent;
-            }
             if (container.hasClass('nfg-editable-field-name')) {
                 scripts[scriptID].name = newContent;
             }
