@@ -42,26 +42,28 @@ function fetchAll(res) {
         execManager.executeListCommand(function(result) {
             var runningScripts = result;
 
-            // Merge into "result" and remove duplicated
-            for (var i=0; i<runningScripts.length; i++) {
+            // Merge into "allScripts" and remove duplicated
+            var allScripts = runningScripts;
+
+            // Loop over all storedScripts. If a script doesn't exist in running scripts, add it.
+            for (var i=0; i<storedScripts.length; i++) {
                 var scriptExists = false;
 
-                for (var j=0; j<storedScripts.length; j++) {
-                    if (runningScripts[i].id == storedScripts[j].id) {
+                for (var j=0; j<runningScripts.length; j++) {
+                    if (runningScripts[j].path == storedScripts[i].path) {
                         scriptExists = true;
                     }
                 }
 
                 if (!scriptExists) {
-                    storedScripts.push(runningScripts[i]);
+                    storedScripts[i].status = 0;
+                    allScripts.push(storedScripts[i]);
                 }
             }
 
-            var result = storedScripts;
-
             // Save all scripts
-            dbManager.saveScripts(result, function() {
-                var json = JSON.stringify(result);
+            dbManager.saveScripts(allScripts, function() {
+                var json = JSON.stringify(allScripts);
                 res.end(json);
             });
         });

@@ -8,14 +8,14 @@ var SCRIPT_STATUS_PAUSED = 'paused';
 
 // Vars
 var scripts = {};
-var communicator = new APICommunicator();
+var service = new Service();
 var shouldRespondToEvents = true;
 
 // Classes
-function APICommunicator () {
+function Service () {
     this.serverURL = document.URL;
 }
-APICommunicator.prototype.fetchAllScripts = function(callback) {
+Service.prototype.fetchAllScripts = function(callback) {
     $.ajax({
         type : "POST",
         url : this.serverURL + 'fetch_all',
@@ -39,47 +39,21 @@ APICommunicator.prototype.fetchAllScripts = function(callback) {
             callback(scriptsObjs);
         }
     });
-
-//    // TEST DATA
-//    var script1 = new Script();
-//    script1.id = 'script-54534';
-//    script1.name = 'My script 1';
-//    script1.status = SCRIPT_STATUS_PLAYING;
-//    script1.path = 'path/to/my/script.js';
-//
-//    var script2 = new Script();
-//    script2.id = 'script-3421423';
-//    script2.name = 'My script 2';
-//    script2.status = SCRIPT_STATUS_PAUSED;
-//    script2.path = 'path/to/my/other/script.js';
-//
-//    var fetchedScripts = {};
-//
-//    fetchedScripts[script1.id] = script1;
-//    fetchedScripts[script2.id] = script2;
-
-    // (END) TEST DATA
-
-//    callback(fetchedScripts);
 };
-APICommunicator.prototype.doesScriptExistWithPath = function(scriptPath, callback) {
-    // fetch all scripts and check if a script with this path is already running
-    callback(false);
-};
-APICommunicator.prototype.addScript = function(script, callback) {
+Service.prototype.addScript = function(script, callback) {
     var success = true;
 
     callback(success);
 }
-APICommunicator.prototype.removeScript = function(script, callback) {
+Service.prototype.removeScript = function(script, callback) {
     // remove the script from db, script.id
     callback();
 }
-APICommunicator.prototype.startAllScripts = function(callback) {
+Service.prototype.startAllScripts = function(callback) {
     // Start all scripts that exist in the database
     callback();
 };
-APICommunicator.prototype.stopAllScripts = function(callback) {
+Service.prototype.stopAllScripts = function(callback) {
     // Stop all scripts that exist in the database
     callback();
 };
@@ -171,9 +145,9 @@ Script.prototype.finishFetchingLog = function() {
             indicateScriptTableNotLoading();
         });
     }
-    // Tells APICommunicator to load scripts and calls functions to display the fetched scripts
+    // Tells Service to load scripts and calls functions to display the fetched scripts
     function refreshScripts(callback) {
-        communicator.fetchAllScripts(function(fetchedScripts) {
+        service.fetchAllScripts(function(fetchedScripts) {
             scripts = fetchedScripts;
             displayScripts();
             addEventsForDynamicallyGeneratedContent();
@@ -391,7 +365,7 @@ Script.prototype.finishFetchingLog = function() {
     function startAllButtonClicked() {
         indicateScriptTableLoading();
 
-        communicator.startAllScripts(function() {
+        service.startAllScripts(function() {
             refreshScripts(function() {
                 indicateScriptTableNotLoading();
             });
@@ -408,7 +382,7 @@ Script.prototype.finishFetchingLog = function() {
         newScript.path = scriptPath;
         newScript.status = SCRIPT_STATUS_PAUSED;
 
-        communicator.addScript(newScript, function(success) {
+        service.addScript(newScript, function(success) {
             if (!success) {
                 alert('This script already exists! The scripts list will now refresh.');
             }
@@ -426,7 +400,7 @@ Script.prototype.finishFetchingLog = function() {
 
         indicateScriptTableLoading();
 
-        communicator.removeScript(scripts[scriptID], function() {
+        service.removeScript(scripts[scriptID], function() {
             refreshScripts(function() {
                 indicateScriptTableNotLoading();
             });
@@ -439,7 +413,7 @@ Script.prototype.finishFetchingLog = function() {
         indicateScriptTableLoading();
 
         scripts[scriptID].stopScript(function() {
-            communicator.removeScript(scripts[scriptID], function() {
+            service.removeScript(scripts[scriptID], function() {
                 refreshScripts(function() {
                     indicateScriptTableNotLoading();
                 });
@@ -449,7 +423,7 @@ Script.prototype.finishFetchingLog = function() {
     function stopAllButtonClicked() {
         indicateScriptTableLoading();
 
-        communicator.stopAllScripts(function() {
+        service.stopAllScripts(function() {
             refreshScripts(function() {
                 indicateScriptTableNotLoading();
             });
