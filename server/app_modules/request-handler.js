@@ -80,10 +80,16 @@ function fetchAll(res) {
     });
 }
 function startAll(res) {
-
+    dbManager.getScripts(function(scripts) {
+        startScriptsRecursion(scripts, function() {
+            res.end();
+        });
+    });
 }
 function stopAll(res) {
-
+    execManager.stopAllScripts(function() {
+        res.end();
+    });
 }
 function addScript(script, res) {
 
@@ -118,6 +124,22 @@ function fetchLog(script, res) {
 
 }
 
+// PRIVATE
+function startScriptsRecursion(scripts, callback) {
+    if (scripts.length > 0) {
+        if (scripts[0].status == 0) {
+            execManager.startScriptWithPath(scripts[0].path, function() {
+                scripts.splice(0, 1);
+                startScriptsRecursion(scripts, callback);
+            });
+        } else {
+            scripts.splice(0, 1);
+            startScriptsRecursion(scripts, callback);
+        }
+    } else {
+        callback();
+    }
+}
 
 
 

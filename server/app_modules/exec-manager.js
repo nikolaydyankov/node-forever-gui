@@ -79,10 +79,16 @@ function stopScriptWithSysName(scriptSysName, callback) {
         callback();
     });
 }
+function stopAllScripts(callback) {
+    execute('forever stopall', function() {
+        callback();
+    });
+}
 
 exports.executeListCommand = executeListCommand;
 exports.startScriptWithPath = startScriptWithPath;
 exports.stopScriptWithSysName = stopScriptWithSysName;
+exports.stopAllScripts= stopAllScripts;
 
 // PRIVATE
 

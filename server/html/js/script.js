@@ -54,11 +54,23 @@ Service.prototype.removeScript = function(script, callback) {
 }
 Service.prototype.startAllScripts = function(callback) {
     // Start all scripts that exist in the database
-    callback();
+    $.ajax({
+        type : "POST",
+        url : this.serverURL + 'start_all',
+        success : function() {
+            callback();
+        }
+    });
 };
 Service.prototype.stopAllScripts = function(callback) {
     // Stop all scripts that exist in the database
-    callback();
+    $.ajax({
+        type : "POST",
+        url : this.serverURL + 'stop_all',
+        success : function() {
+            callback();
+        }
+    });
 };
 
 function Script () {
