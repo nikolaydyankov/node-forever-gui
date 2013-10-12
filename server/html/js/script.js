@@ -11,7 +11,6 @@ var scripts = [];
 var service = new Service();
 var shouldRespondToEvents = true;
 var socket = io.connect();
-var watchingLog = false;
 
 // Classes
 function Service () {
@@ -151,7 +150,6 @@ Script.prototype.stopScript = function(callback) {
 };
 Script.prototype.startFetchingLog = function(callback) {
     var log = this.log;
-    watchingLog = true;
 
     $.ajax({
         type : "POST",
@@ -170,7 +168,6 @@ Script.prototype.startFetchingLog = function(callback) {
     });
 };
 Script.prototype.finishFetchingLog = function() {
-    watchingLog = false;
     socket.emit('unwatch', { path : this.log });
 };
 
