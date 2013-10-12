@@ -1,4 +1,4 @@
 .idea/*
-server/node_modules
-server/test_scripts
-server/app_modules/db.json
+forever-gui/server/node_modules
+forever-gui/server/test_scripts
+forever-gui/server/app_modules/db.json
