@@ -4,12 +4,19 @@ niki:
 
 ivan:
 ----------
-- code installer
+	installer tasks:
+	----------------
+	- (done) copy all the gui source to /usr/local/lib/node_modules/forever-gui
+	- make control script in /usr/local/lib/node_modules/forever-gui/forever-gui and symlink it to /usr/local/bin/forever-gui
+	- (done) prompts for web interface url and port (default to 443)
+	- (done) prompts user for login name and password (save the password in a safe place?)
+	- generate self-signed certificates
 
-installer tasks:
-----------------
-- copy all the gui source to /usr/local/lib/node_modules/forever-gui
-- make control script and place it in /usr/local/bin/forever-gui as symlink to /usr/local/lib/node_modules/forever-gui/bin/forever-gui
-- prompts for web interface url and port (default to 443)
-- prompts user for login name and password (save the password in a safe place?)
-- generate self-signed certificates
+
+	control script required actions:
+	----------------
+	forever-gui start
+	forever-gui stop
+	forever-gui restart
+	forever-gui addaccount username pass
+	forever-gui delaccount username
