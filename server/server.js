@@ -11,7 +11,7 @@ app.configure(function(){
 });
 
 var httpServer = http.createServer(app);
-httpServer.listen(80);
+httpServer.listen(8080);
 
 var io = require('socket.io').listen(httpServer);
 
