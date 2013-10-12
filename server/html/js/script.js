@@ -151,8 +151,6 @@ Script.prototype.stopScript = function(callback) {
 Script.prototype.startFetchingLog = function(callback) {
     var log = this.log;
 
-    console.log(log);
-
     $.ajax({
         type : "POST",
         url : service.serverURL + 'fetch_log',
@@ -164,23 +162,13 @@ Script.prototype.startFetchingLog = function(callback) {
 
             socket.emit('watch', { path : log });
             socket.on('log', function (data) {
-                callback(data);
+                callback(data.replace(/\n/g, '<br />'));
             });
         }
     });
 };
 Script.prototype.finishFetchingLog = function() {
     socket.emit('unwatch', { path : this.log });
-//    $.ajax({
-//        type : "POST",
-//        url : service.serverURL + 'finish_fetching_log',
-//        data : {
-//            "script" : this.getPlainObject()
-//        },
-//        success : function() {
-//
-//        }
-//    });
 };
 
 (function($, undefined) {
@@ -534,5 +522,5 @@ Script.prototype.finishFetchingLog = function() {
                 return scripts[i];
             }
         }
-    };
+    }
 })(jQuery);

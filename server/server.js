@@ -3,7 +3,7 @@ var express =           require('express');
 var requestHandler =    require(__dirname + '/app_modules/request-handler.js');
 var app =               express();
 var fs = require('fs');
-
+var watchers = [];
 
 app.configure(function(){
     app.use(express.static(__dirname + '/html'));
@@ -53,35 +53,49 @@ requestHandler.requestIO = function() {
 io.sockets.on('connection', function(socket) {
     console.log('connection');
 
-    var watcher;
-    var logPath;
-
     socket.on('watch', function(data) {
-        logPath = data.path;
+        unwatchAll();
+
+        var logPath = data.path;
         console.log('watching: ', logPath);
 
-        watcher = fs.watch(logPath, function() {
-            fs.readFile(logPath, 'utf8', function(err, data) {
+        var watcher = fs.watch(logPath, function() {
+            fs.readFile(logPath, 'utf-8', function(err, data) {
                 socket.emit('log', data);
                 console.log('data');
             });
         });
+
+        watchers.push({
+            "watcher" : watcher,
+            "path" : logPath
+        });
     });
 
     socket.on('unwatch', function(data) {
-        console.log('unwatching: ' + data.path);
-        fs.unwatchFile(data.path);
-
-        if (watcher) {
-            watcher.close();
-        }
+        console.log('unwatch');
+        unwatchAll();
     });
 
     socket.on('disconnect', function() {
-        console.log('unwatching: ' + logPath);
-        fs.unwatchFile(logPath);
-        if (watcher) {
-            watcher.close();
-        }
+        console.log('disconnect');
+        unwatchAll();
     });
 });
+
+function unwatchAll() {
+    var len = watchers.length;
+
+    for (var i=0; i<len; i++) {
+        var watcher = watchers[i];
+        console.log('Closing watcher with log path: ' + watcher["path"]);
+
+        if (watcher["watcher"]) {
+            watcher["watcher"].close();
+        }
+
+        fs.unwatchFile(watcher["path"]);
+    }
+
+    watchers = new Array();
+}
