@@ -12,6 +12,94 @@ L="$S =============================================================="
 SCRIPT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 declare -a SETTINGS
 
+function PromptDomain {
+	while true; do
+		read -p "$S Specify domain (without http://) or IP: " DOMAIN
+
+		# Removed because some servers may use only IP
+		# 
+		# validDomain=`echo $DOMAIN | egrep "([a-z0-9_-]+)\.([a-zA-Z\.]){2,7}"`
+		# if [ ! -z "$validDomain" ]; then
+		# 	break;
+		
+		if [ ! -z "$DOMAIN" ]; then
+			break;
+		else
+			echo ""
+			echo "$S Please write a valid domain"
+			echo ""
+		fi
+	done
+}
+
+function PromptPort {
+	while true; do
+		read -p "$S Specify port for $DOMAIN [443]: " PORT
+
+		portRegex='^[0-9]{2,5}$'
+		if [[ $PORT =~ $portRegex ]]; then
+			break;
+		else
+			PORT=443
+			echo "$S Port is set to $PORT because specified port is not matching the pattern [0-9]{2,5}"
+			break;
+		fi
+	done
+}
+
+function PromptUsername {
+	while true; do
+		read -p "$S Specify Administrator username: " ADMIN_USER
+
+		loginRegex='^[a-zA-Z0-9_-]{5,16}$'
+		if [[ $ADMIN_USER =~ $loginRegex ]]; then
+			break;
+		else
+			echo ""
+			echo "$S Please use a proper username"
+			echo "$S Accepted characters: [a-zA-Z0-9_-] and length between 5 and 16 symbols"
+			echo ""
+		fi
+	done
+}
+
+function PromptPassword {
+	while true; do
+		read -s -p "$S Specify Administrator password: " ADMIN_PASS
+
+		validPass=`echo "$ADMIN_PASS" | egrep "[a-z]" | egrep "[A-Z]" | egrep "([a-zA-Z0-9@#-_$]){6,100}"`
+		
+		if [ ! -z "$validPass" ]; then
+			echo ""
+			break;
+		else
+			echo ""
+			echo "$S Please use stronger password."
+			echo "$S Required at least one lower case letter [a-z], at least one upper case [A-Z] letter."
+			echo "$S Accepted characters: a-zA-Z0-9@#-_$"
+			echo ""
+		fi
+	done
+
+	# Prompt for Repeat Password
+	while true; do
+		read -s -p "$S Repeat password: " ADMIN_PASS2
+
+		if [ $ADMIN_PASS = $ADMIN_PASS2 ]; then
+			echo ""
+			break;
+		else
+			echo ""
+			echo "$S Passwords do not match"
+			echo ""
+
+			PromptPassword
+			break;
+		fi
+	done
+
+}
+
 case "$1" in
 	install)
 			
@@ -21,68 +109,13 @@ case "$1" in
 			echo "$L"
 			echo ""
 
-			# Prompt for Domain
-			while true; do
-				read -p "$S Specify domain (without http://): " DOMAIN
+			PromptDomain
 
-				validDomain=`echo $DOMAIN | egrep "([a-z0-9_-]+)\.([a-zA-Z\.]){2,7}"`
-				
-				if [ ! -z "$validDomain" ]; then
-					break;
-				else
-					echo ""
-					echo "$S Please write a valid domain"
-					echo ""
-				fi
-			done
+			PromptPort
 
-			# Prompt for Port
-			while true; do
-				read -p "$S Specify port for $DOMAIN [443]: " PORT
-				
-				portRegex='^[0-9]{2,5}$'
-				if [[ $PORT =~ $portRegex ]]; then
-					break;
-				else
-					PORT=443
-					echo "$S Port is set to $PORT because specified port is not matching the pattern [0-9]{2,5}"
-					break;
-				fi
-			done
+			PromptUsername
 
-			# Prompt for Username
-			while true; do
-				read -p "$S Specify Administrator username: " ADMIN_USER
-				
-				loginRegex='^[a-zA-Z0-9_-]{5,16}$'
-				if [[ $ADMIN_USER =~ $loginRegex ]]; then
-					break;
-				else
-					echo ""
-					echo "$S Please use a proper username"
-					echo "$S Accepted characters: [a-zA-Z0-9_-] and length between 5 and 16 symbols"
-					echo ""
-				fi
-			done
-
-			# Prompt for Password
-			while true; do
-				read -s -p "$S Specify Administrator password: " ADMIN_PASS
-
-				validPass=`echo $ADMIN_PASS | egrep "([a-zA-Z0-9@#-_$]){6,100}" | egrep "[a-z]" | egrep "[A-Z]"`
-				
-				if [ ! -z "$validPass" ]; then
-					echo ""
-					break;
-				else
-					echo ""
-					echo "$S Please use stronger password."
-					echo "$S Required at least one lower case letter [a-z], at least one upper case [A-Z] letter."
-					echo "$S Accepted characters: a-zA-Z0-9@#-_$"
-					echo ""
-				fi
-			done
-			
+			PromptPassword
 
 			echo ""
 			echo "$L"
