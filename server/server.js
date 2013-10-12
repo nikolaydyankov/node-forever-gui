@@ -60,7 +60,7 @@ io.sockets.on('connection', function(socket) {
         console.log('watching: ', logPath);
 
         var watcher = fs.watch(logPath, function() {
-            fs.readFile(logPath, 'utf8', function(err, data) {
+            fs.readFile(logPath, 'utf-8', function(err, data) {
                 socket.emit('log', data);
                 console.log('data');
             });

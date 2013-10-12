@@ -162,7 +162,7 @@ Script.prototype.startFetchingLog = function(callback) {
 
             socket.emit('watch', { path : log });
             socket.on('log', function (data) {
-                callback(data);
+                callback(data.replace(/\n/g, '<br />'));
             });
         }
     });
