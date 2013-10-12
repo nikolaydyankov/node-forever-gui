@@ -5,9 +5,14 @@ var app =               express();
 var fs = require('fs');
 var watchers = [];
 
-app.configure(function(){
+app.configure(function() {
+    app.use(express.basicAuth(function(user, pass) {
+        return user === 'admin' && pass === 'admin';
+    }));
+
     app.use(express.static(__dirname + '/html'));
     app.use(express.bodyParser());
+
 });
 
 var httpServer = http.createServer(app);
@@ -42,13 +47,6 @@ app.post('/remove_script', function(req, res) {
 app.post('/fetch_log', function(req, res) {
     requestHandler.handleRequest('/fetch_log', req, res);
 });
-
-// Unix commands exec: http://stackoverflow.com/a/12941138/1156999
-// Basic authentication: http://stackoverflow.com/a/12148212/1156999
-
-requestHandler.requestIO = function() {
-    return io;
-}
 
 io.sockets.on('connection', function(socket) {
     console.log('connection');

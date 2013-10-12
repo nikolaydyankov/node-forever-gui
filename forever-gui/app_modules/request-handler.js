@@ -1,10 +1,6 @@
 var execManager = require(__dirname + '/exec-manager.js');
 var dbManager = require(__dirname + '/db-manager.js');
 
-dbManager.requestIO = function() {
-    return exports.requestIO();
-}
-
 function handleRequest(url, req, res) {
     if (url == '/fetch_all') {
         fetchAll(res);

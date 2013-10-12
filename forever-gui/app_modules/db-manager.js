@@ -43,9 +43,6 @@ function fetchLogWithPath(logPath, callback) {
             callback(data);
         }
     });
-    exports.requestIO().sockets.on('connection', function (socket) {
-
-    });
 }
 
 exports.saveScripts = saveScripts;

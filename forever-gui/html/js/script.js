@@ -158,7 +158,7 @@ Script.prototype.startFetchingLog = function(callback) {
             "script" : this.getPlainObject()
         },
         success : function(data) {
-            callback(data);
+            callback(data.replace(/\n/g, '<br />'));
 
             socket.emit('watch', { path : log });
             socket.on('log', function (data) {
