@@ -1,16 +1,34 @@
 #!/bin/bash
 
-# Check for administrator user
-# if [ `id -u` != 0 ]; then
-# 	echo "Run with administrator user (sudo)"
-# 	exit 1;
-# fi
+Check for administrator user
+if [ `id -u` != 0 ]; then
+	echo "Run with administrator user (sudo)"
+	exit 1;
+fi
 
 APPNAME="Forever GUI"
+APPFOLDER="forever-gui"
+APPMODULESFOLDER="app_modules"
+NODEINSTALLPATH="/usr/local/lib/node_modules"
+CONFIGFILE="config.json"
+ACCOUNTSFILE="accounts.json"
+
 S="   "
 L="$S =============================================================="
 SCRIPT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-declare -a SETTINGS
+
+function md5it {
+	if builtin command -v md5 > /dev/null; then
+		echo "$1" | md5
+	elif builtin command -v md5sum > /dev/null ; then
+		echo "$1" | md5sum | awk '{print $1}'
+	else
+		rvm_error "Neither md5 nor md5sum were found in the PATH"
+		return 1
+	fi
+
+	return 0
+}
 
 function PromptDomain {
 	while true; do
@@ -100,6 +118,25 @@ function PromptPassword {
 
 }
 
+function SetupFiles {
+
+	echo "$S Preparing for installation of app files"
+	mkdir -p "$NODEINSTALLPATH" || { exit 1; }
+
+	echo "$S Moving files to app directory"
+	cp -R "$SCRIPT/$APPFOLDER" "$NODEINSTALLPATH/" || { exit 1; }
+
+}
+
+function SaveSettings {
+
+	ENCRYPTED_PASS=$(md5it "$ADMIN_PASS")
+
+	printf '{"domain":"%s","port":"%s"}' "$DOMAIN" "$PORT" > "$NODEINSTALLPATH/$APPFOLDER/$APPMODULESFOLDER/$CONFIGFILE"
+	printf '{"%s":"%s"}' "$ADMIN_USER" "$ENCRYPTED_PASS" > "$NODEINSTALLPATH/$APPFOLDER/$APPMODULESFOLDER/$ACCOUNTSFILE"
+	
+}
+
 case "$1" in
 	install)
 			
@@ -117,6 +154,10 @@ case "$1" in
 
 			PromptPassword
 
+			SetupFiles
+
+			SaveSettings
+
 			echo ""
 			echo "$L"
 			echo ""
@@ -126,19 +167,16 @@ case "$1" in
 			echo ""
 
 		;;
-	reconfigure)
 
-			echo "$S Reconfiguration of $APPNAME has started"
-	
-		;;
 	help)
 
 			echo "Help information [TODO]"
 	
 		;;
+
 	*)
 
-		echo "Usage: {install|reconfigure|help}"
+		echo "Usage: {install|help}"
 
 	;;
 esac
